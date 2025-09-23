@@ -2,24 +2,61 @@
 console.log("Cinema de Bairro - JS Carregado");
 
 // --- GERENCIADOR DE DADOS com localStorage ---
-// Garante que os dados do admin.js sejam usados aqui.
 const dataManager = {
     getMovies: function() {
-        // Se não houver dados, retorna um array vazio para não quebrar a aplicação
-        return JSON.parse(localStorage.getItem('cinema_movies')) || [];
+        return JSON.parse(localStorage.getItem('cinema_movies'));
     },
     getRooms: function() {
-        return JSON.parse(localStorage.getItem('cinema_rooms')) || [];
+        return JSON.parse(localStorage.getItem('cinema_rooms'));
     },
     getSessions: function() {
-        return JSON.parse(localStorage.getItem('cinema_sessions')) || [];
+        return JSON.parse(localStorage.getItem('cinema_sessions'));
+    },
+    saveMovies: function(movies) {
+        localStorage.setItem('cinema_movies', JSON.stringify(movies));
     },
     saveSessions: function(sessions) {
         localStorage.setItem('cinema_sessions', JSON.stringify(sessions));
+    },
+    generateSeats: function(rows, cols) {
+        const seats = [];
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                seats.push({ id: `${String.fromCharCode(65 + i)}${j + 1}`, isOccupied: false });
+            }
+        }
+        return seats;
+    },
+    init: function() {
+        if (!this.getMovies()) {
+            console.log("Inicializando dados de filmes no localStorage...");
+            const initialMovies = [
+                { id: 1, title: "A Origem", director: "Christopher Nolan", genre: "Ficção Científica", poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7LjIJ5gwqT1jDZjp60mJmBc27KFhNeW3BI_LSSwJRGrtTO1ld2UNDXFD9ZGBziYeP9QI&usqp=CAU" },
+                { id: 2, title: "O Poderoso Chefão", director: "Francis Ford Coppola", genre: "Drama", poster: "https://m.media-amazon.com/images/I/71nJYTNc-sL._UF1000,1000_QL80_.jpg" },
+                { id: 3, title: "Interestelar", director: "Christopher Nolan", genre: "Ficção Científica", poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa0WX5DKMxRvBbVtopzQVpmpUpaOKwd-VcSQ&s" }
+            ];
+            this.saveMovies(initialMovies);
+        }
+        if (!this.getRooms()) {
+             console.log("Inicializando dados de salas no localStorage...");
+             const initialRooms = [ { id: 1, name: "Sala 1", rows: 5, cols: 8 } ];
+             localStorage.setItem('cinema_rooms', JSON.stringify(initialRooms));
+        }
+        if (!this.getSessions()) {
+            console.log("Inicializando dados de sessões no localStorage...");
+             const initialSessions = [
+                { id: 1, movieId: 1, roomId: 1, time: "18:00", seats: this.generateSeats(5, 8) },
+                { id: 2, movieId: 1, roomId: 1, time: "21:00", seats: this.generateSeats(5, 8) },
+                { id: 3, movieId: 2, roomId: 1, time: "20:00", seats: this.generateSeats(5, 8) },
+                { id: 4, movieId: 3, roomId: 1, time: "19:30", seats: this.generateSeats(5, 8) }
+             ];
+             this.saveSessions(initialSessions);
+        }
     }
 };
 
-// Carrega os dados na inicialização
+// Inicializa e carrega os dados
+dataManager.init();
 let movies = dataManager.getMovies();
 let rooms = dataManager.getRooms();
 let sessions = dataManager.getSessions();
@@ -131,28 +168,52 @@ function renderSessions(movieId) {
     document.getElementById('back-to-movies').addEventListener('click', renderMovies);
 }
 
-// Função para renderizar a lista de filmes
+// Função para renderizar a lista de filmes, agrupados por gênero
 function renderMovies() {
     app.innerHTML = '<h2>Filmes em Cartaz</h2>';
-    const movieList = document.createElement('div');
-    movieList.className = 'movie-list';
 
-    movies.forEach(movie => {
-        const movieCard = document.createElement('div');
-        movieCard.className = 'movie-card';
-        movieCard.innerHTML = `
-            <img src="${movie.poster}" alt="Pôster de ${movie.title}">
-            <h3>${movie.title}</h3>
-            <p><strong>Gênero:</strong> ${movie.genre}</p>
-            <p><strong>Diretor:</strong> ${movie.director}</p>
-        `;
-        movieCard.addEventListener('click', () => {
-            renderSessions(movie.id);
+    // Agrupa os filmes por gênero
+    const moviesByGenre = movies.reduce((acc, movie) => {
+        const genre = movie.genre || 'Sem Gênero';
+        if (!acc[genre]) {
+            acc[genre] = [];
+        }
+        acc[genre].push(movie);
+        return acc;
+    }, {});
+
+    // Renderiza uma seção para cada gênero
+    for (const genre in moviesByGenre) {
+        const genreSection = document.createElement('div');
+        genreSection.className = 'genre-section';
+
+        const title = document.createElement('h3');
+        title.className = 'genre-title';
+        title.textContent = genre;
+        genreSection.appendChild(title);
+
+        const movieList = document.createElement('div');
+        movieList.className = 'horizontal-movie-list';
+
+        moviesByGenre[genre].forEach(movie => {
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card';
+            movieCard.innerHTML = `
+                <img src="${movie.poster}" alt="Pôster de ${movie.title}">
+                <div class="movie-card-info">
+                    <h4>${movie.title}</h4>
+                    <p>${movie.director}</p>
+                </div>
+            `;
+            movieCard.addEventListener('click', () => {
+                renderSessions(movie.id);
+            });
+            movieList.appendChild(movieCard);
         });
-        movieList.appendChild(movieCard);
-    });
-
-    app.appendChild(movieList);
+        
+        genreSection.appendChild(movieList);
+        app.appendChild(genreSection);
+    }
 }
 
 // Inicializa a aplicação
