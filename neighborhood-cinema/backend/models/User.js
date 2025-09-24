@@ -1,53 +1,62 @@
 const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
-module.exports = (sequelize) => {
-  const User = sequelize.define('User ', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    role: {
-      type: DataTypes.ENUM('customer', 'admin'),
-      defaultValue: 'customer'
-    },
-    loyaltyPoints: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
+const User = sequelize.define('User ', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [2, 50]
     }
-  });
-
-  // Hook para hash da senha antes de criar/atualizar
-  User.beforeCreate(async (user) => {
-    if (user.changed('password')) {
-      user.password = await bcrypt.hash(user.password, 10);
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+      is: validator.isEmail
     }
-  });
-
-  User.beforeUpdate(async (user) => {
-    if (user.changed('password')) {
-      user.password = await bcrypt.hash(user.password, 10);
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      len: [6, 255]
     }
-  });
+  },
+  role: {
+    type: DataTypes.ENUM('user', 'admin'),
+    defaultValue: 'user'
+  },
+  points: {  // Para fidelização simples
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+});
 
-  User.prototype.comparePassword = async function(password) {
-    return bcrypt.compare(password, this.password);
-  };
+// Hook para hash de senha
+User.beforeCreate(async (user) => {
+  user.password = await bcrypt.hash(user.password, 10);
+});
 
-  return User;
+User.beforeUpdate(async (user) => {
+  if (user.changed('password')) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
+});
+
+// Método para comparar senha
+User.prototype.validPassword = async function(password) {
+  return await bcrypt.compare(password, this.password);
 };
+
+module.exports = User;

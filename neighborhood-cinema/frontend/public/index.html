@@ -10,7 +10,7 @@
     <header>
         <h1>Bem-vindo ao Cinema de Bairro</h1>
         <nav>
-            <a href="admin/admin.html">Admin</a>
+            <a href="admin/admin.html">Área Admin</a>
         </nav>
     </header>
     <main>
@@ -20,8 +20,19 @@
         </section>
         <section id="seats">
             <h2>Reservar Assentos</h2>
-            <canvas id="seat-map" width="300" height="200"></canvas>
-            <button onclick="reserveTicket()">Reservar</button>
+            <select id="movie-select">
+                <option value="">Selecione um filme</option>
+            </select>
+            <div id="seat-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px;"></div>
+            <select id="promotion-select">
+                <option value="">Sem promoção</option>
+            </select>
+            <button onclick="reserveTicket()">Reservar Ingressos</button>
+            <p id="total-price"></p>
+        </section>
+        <section id="my-reservations">
+            <h2>Minhas Reservas</h2>
+            <div id="reservations-list"></div>
         </section>
     </main>
     <script src="script.js"></script>
