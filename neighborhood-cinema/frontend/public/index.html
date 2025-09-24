@@ -1,12 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Neighborhood Cinema Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema de Bairro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="root"></div>
+    <header>
+        <h1>Bem-vindo ao Cinema de Bairro</h1>
+        <nav>
+            <a href="admin/admin.html">Admin</a>
+        </nav>
+    </header>
+    <main>
+        <section id="movies">
+            <h2>Filmes em Cartaz</h2>
+            <div id="movie-list"></div>
+        </section>
+        <section id="seats">
+            <h2>Reservar Assentos</h2>
+            <canvas id="seat-map" width="300" height="200"></canvas>
+            <button onclick="reserveTicket()">Reservar</button>
+        </section>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>
