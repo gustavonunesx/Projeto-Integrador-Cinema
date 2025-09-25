@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema de Bairro</title>
+    <title>Cinema de Bairro - Reservas Online</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Bem-vindo ao Cinema de Bairro</h1>
+        <h1>Cinema de Bairro</h1>
         <nav>
-            <a href="admin/admin.html">Área Admin</a>
+            <a href="admin/admin.html">Área Admin (Login)</a>
         </nav>
     </header>
     <main>
@@ -18,17 +18,18 @@
             <h2>Filmes em Cartaz</h2>
             <div id="movie-list"></div>
         </section>
-        <section id="seats">
-            <h2>Reservar Assentos</h2>
+        <section id="reservation">
+            <h2>Faça Sua Reserva</h2>
             <select id="movie-select">
                 <option value="">Selecione um filme</option>
             </select>
-            <div id="seat-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px;"></div>
+            <div id="seat-grid"></div> <!-- Mapa assentos interativo -->
             <select id="promotion-select">
                 <option value="">Sem promoção</option>
             </select>
-            <button onclick="reserveTicket()">Reservar Ingressos</button>
+            <button onclick="reserveTicket()">Reservar Assentos Selecionados</button>
             <p id="total-price"></p>
+            <p id="login-note">Para reservar, faça login via API ou admin (token salvo em localStorage).</p>
         </section>
         <section id="my-reservations">
             <h2>Minhas Reservas</h2>
