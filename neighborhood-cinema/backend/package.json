@@ -1,17 +1,18 @@
 {
   "name": "cinema-backend",
   "version": "1.0.0",
-  "description": "Backend para sistema de cinema de bairro",
+  "description": "Backend API para sistema de gestão de cinemas de bairro (Node.js/Express/Sequelize/MySQL)",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "backup": "node backup.js"
+    "backup": "node backup.js",
+    "seed": "node seeds.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "sequelize": "^6.32.1",
-    "sqlite3": "^5.1.6",
+    "mysql2": "^3.6.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
@@ -24,3 +25,4 @@
     "nodemon": "^3.0.1"
   }
 }
+
