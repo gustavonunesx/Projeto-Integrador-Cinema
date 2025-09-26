@@ -1,48 +1,17 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const User = require('./User ');
-const Movie = require('./Movie');
-const Promotion = require('./Promotion');
+     const { DataTypes } = require('sequelize');
+     const sequelize = require('../config/database');
+     const Movie = require('./Movie');
 
-const Ticket = sequelize.define('Ticket', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  seatNumber: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      min: 1,
-      max: 100
-    }
-  },
-  price: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-    defaultValue: 0,
-    validate: {
-      min: 0
-    }
-  },
-  status: {
-    type: DataTypes.ENUM('reserved', 'purchased', 'cancelled'),
-    defaultValue: 'reserved'
-  },
-  discountApplied: {
-    type: DataTypes.INTEGER,  // % de desconto
-    defaultValue: 0
-  }
-});
+     const Ticket = sequelize.define('Ticket', {
+       movieId: { type: DataTypes.INTEGER, references: { model: 'Movies', key: 'id' } },
+       seats: { type: DataTypes.ARRAY(DataTypes.INTEGER) }, // array de assentos, ex: [1,2,3]
+       customerName: { type: DataTypes.STRING, allowNull: false }, // nome do cliente (sem auth)
+       price: { type: DataTypes.FLOAT, defaultValue: 20.0 }, // preço base
+       promotionId: { type: DataTypes.INTEGER } // para aplicar promoções
+     });
 
-// Associações
-Ticket.belongsTo(User);
-Ticket.belongsTo(Movie);
-Ticket.belongsTo(Promotion, { as: 'promotion' });
+     Ticket.belongsTo(Movie);
+     Movie.hasMany(Ticket);
 
-Movie.hasMany(Ticket);
-User.hasMany(Ticket);
-Promotion.hasMany(Ticket);
-
-module.exports = Ticket;
+     module.exports = Ticket;
+     

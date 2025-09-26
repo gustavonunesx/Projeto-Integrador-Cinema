@@ -1,57 +1,14 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const validator = require('validator');
+   const { DataTypes } = require('sequelize');
+   const sequelize = require('../config/database');
 
-const Movie = sequelize.define('Movie', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      len: [1, 100]
-    }
-  },
-  description: {
-    type: DataTypes.TEXT,
-    validate: {
-      len: [0, 500]
-    }
-  },
-  duration: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      min: 1,
-      max: 300
-    }
-  },
-  time: {
-    type: DataTypes.TIME,
-    allowNull: false,
-    validate: {
-      is: validator.isTime  // Validação simples de horário
-    }
-  },
-  seatsAvailable: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-    validate: {
-      min: 0,
-      max: 100
-    }
-  },
-  image: {
-    type: DataTypes.STRING,
-    validate: {
-      isUrl: true
-    }
-  }
-});
+   const Movie = sequelize.define('Movie', {
+     title: { type: DataTypes.STRING, allowNull: false },
+     genre: { type: DataTypes.STRING },
+     duration: { type: DataTypes.INTEGER }, // em minutos
+     showtime: { type: DataTypes.DATE }, // horário da sessão (formato completo: data + hora)
+     seatsAvailable: { type: DataTypes.INTEGER, defaultValue: 50 }, // assentos totais
+     seatsOccupied: { type: DataTypes.INTEGER, defaultValue: 0 }
+   });
 
-module.exports = Movie;
+   module.exports = Movie;
+   
