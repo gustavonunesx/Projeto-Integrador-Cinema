@@ -100,23 +100,45 @@
    });
 
    // Rotas para Reports (análise de público)
-   app.get('/api/reports', async (req, res) => {
-     const totalTickets = await Ticket.count();
-     const popularMovies = await Movie.findAll({
-       include: [{ model: Ticket, attributes: [] }],
-       attributes: ['title', [sequelize.fn('COUNT', sequelize.col('Tickets.id')), 'ticketCount']],
-       group: ['Movie.id'],
-       order: [['ticketCount', 'DESC']],
-       limit: 5
-     });
-     const peakHours = await Ticket.findAll({
-       attributes: [[sequelize.fn('HOUR', sequelize.col('createdAt')), 'hour'], [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
-       group: ['hour'],
-       order: [['count', 'DESC']]
-     });
+        // Rotas para Reports (análise de público — versão simples e infalível)
+     app.get('/api/reports', async (req, res) => {
+       try {
+         // Total de ingressos (simples count)
+         const totalTickets = await Ticket.count();
 
-     res.json({ totalTickets, popularMovies, peakHours });
-   });
+         // Filmes populares (busca todos os movies e conta tickets manualmente — evita joins complexos)
+         const movies = await Movie.findAll();
+         const popularMovies = [];
+         for (const movie of movies) {
+           const ticketCount = await Ticket.count({ where: { movieId: movie.id } });
+           popularMovies.push({ title: movie.title, ticketCount });
+         }
+         // Ordena por ticketCount descendente e limita a 5
+         popularMovies.sort((a, b) => b.ticketCount - a.ticketCount);
+         const topMovies = popularMovies.slice(0, 5);
+
+         // Horários de pico (simples: conta tickets por hora de criação, sem group by avançado)
+         const tickets = await Ticket.findAll();
+         const hoursCount = {};
+         tickets.forEach(ticket => {
+           const hour = new Date(ticket.createdAt).getHours();
+           hoursCount[hour] = (hoursCount[hour] || 0) + 1;
+         });
+         const peakHours = Object.entries(hoursCount)
+           .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+           .sort((a, b) => b.count - a.count);
+
+         res.json({ 
+           totalTickets, 
+           popularMovies: topMovies, 
+           peakHours 
+         });
+       } catch (error) {
+         console.error('Erro nos reports:', error); // Log no terminal para debug
+         res.status(500).json({ error: 'Erro interno nos relatórios', details: error.message });
+       }
+     });
+     
 
    app.listen(PORT, 'localhost', () => { // Só localhost, sem remoto
      console.log(`Servidor rodando em http://localhost:${PORT}`);
