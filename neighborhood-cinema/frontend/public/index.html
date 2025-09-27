@@ -1,41 +1,49 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema de Bairro - Reservas Online</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Cinema de Bairro</h1>
-        <nav>
-            <a href="admin/admin.html">Área Admin (Login)</a>
-        </nav>
-    </header>
-    <main>
-        <section id="movies">
-            <h2>Filmes em Cartaz</h2>
-            <div id="movie-list"></div>
-        </section>
-        <section id="reservation">
-            <h2>Faça Sua Reserva</h2>
-            <select id="movie-select">
-                <option value="">Selecione um filme</option>
-            </select>
-            <div id="seat-grid"></div> <!-- Mapa assentos interativo -->
-            <select id="promotion-select">
-                <option value="">Sem promoção</option>
-            </select>
-            <button onclick="reserveTicket()">Reservar Assentos Selecionados</button>
-            <p id="total-price"></p>
-            <p id="login-note">Para reservar, faça login via API ou admin (token salvo em localStorage).</p>
-        </section>
-        <section id="my-reservations">
-            <h2>Minhas Reservas</h2>
-            <div id="reservations-list"></div>
-        </section>
-    </main>
-    <script src="script.js"></script>
-</body>
-</html>
+   <!DOCTYPE html>
+   <html lang="pt-BR">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo básico, prioriza desktop -->
+     <title>Neighborhood Cinema</title>
+     <link rel="stylesheet" href="style.css">
+   </head>
+   <body>
+     <header>
+       <h1>Cinema de Bairro</h1>
+       <p>Programação variada e reservas fáceis!</p>
+     </header>
+
+     <section id="movies">
+       <h2>Filmes em Cartaz</h2>
+       <div id="movies-list"></div>
+     </section>
+
+     <section id="reservation">
+       <h2>Reserve Ingressos</h2>
+       <form id="reserve-form">
+         <select id="movie-select"></select>
+         <input type="text" id="customer-name" placeholder="Seu Nome" required>
+         <input type="number" id="seats-count" placeholder="Número de Assentos" min="1" max="5" required>
+         <select id="promotion-select"></select>
+         <button type="submit">Reservar</button>
+       </form>
+       <div id="seats-selection"></div> <!-- Para escolher assentos específicos -->
+     </section>
+
+     <section id="loyalty">
+       <h2>Programa de Fidelidade</h2>
+       <input type="text" id="loyalty-email" placeholder="Seu Email para Pontos">
+       <button id="check-points">Ver Pontos</button>
+       <p id="points-display"></p>
+       <button id="redeem-points" style="display:none;">Resgatar 50 Pontos por Desconto</button>
+     </section>
+
+     <section id="marketing">
+       <h2>Compartilhe no Social</h2>
+       <button id="share-promo">Compartilhar Promoção Atual</button>
+       <p id="share-link"></p>
+     </section>
+
+     <script src="script.js"></script>
+   </body>
+   </html>
+   

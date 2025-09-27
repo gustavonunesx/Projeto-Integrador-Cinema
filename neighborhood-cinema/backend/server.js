@@ -1,101 +1,124 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
+   const express = require('express');
+   const cors = require('cors');
+   const sequelize = require('./config/database');
+   const Movie = require('./models/Movie');
+   const Ticket = require('./models/Ticket');
+   const Promotion = require('./models/Promotion');
+   const Loyalty = require('./models/Loyalty');
 
-dotenv.config();
+   const app = express();
+   const PORT = process.env.PORT || 3000;
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+   app.use(cors({ origin: 'http://localhost:8080' })); // Só permite frontend local, sem remoto
+   app.use(express.json());
 
-// Sequelize
-const sequelize = require('./config/database');
+   // Sincroniza modelos com DB (cria tabelas se não existirem)
+   sequelize.sync({ force: false }).then(() => {
+     console.log('Banco de dados conectado!');
+   });
 
-// Importar models
-const UserModel = require('./models/User');
-const MovieModel = require('./models/Movie');
-const TicketModel = require('./models/Ticket');
-const PromotionModel = require('./models/Promotion');
+   // Rotas para Movies (organização de sessões)
+   app.get('/api/movies', async (req, res) => {
+     const movies = await Movie.findAll();
+     res.json(movies);
+   });
 
-// Inicializar models
-const User = UserModel(sequelize);
-const Movie = MovieModel(sequelize);
-const Ticket = TicketModel(sequelize);
-const Promotion = PromotionModel(sequelize);
+   app.post('/api/movies', async (req, res) => {
+     const movie = await Movie.create(req.body);
+     res.json(movie);
+   });
 
-// Associações (mantidas para queries)
-User.hasMany(Ticket, { foreignKey: 'User Id', as: 'Tickets' });
-Ticket.belongsTo(User, { foreignKey: 'User Id', as: 'User ' });
-Movie.hasMany(Ticket, { foreignKey: 'MovieId', as: 'Tickets' });
-Ticket.belongsTo(Movie, { foreignKey: 'MovieId', as: 'Movie' });
+   // Rotas para Tickets (venda/reserva de ingressos, com assentos)
+   app.get('/api/tickets', async (req, res) => {
+     const tickets = await Ticket.findAll({ include: Movie });
+     res.json(tickets);
+   });
 
-// Conexão e Sync
-sequelize.authenticate()
-  .then(() => console.log('✅ MySQL conectado!'))
-  .catch(err => console.error('❌ Erro MySQL:', err));
+   app.post('/api/tickets', async (req, res) => {
+     const { movieId, seats, customerName, promotionId } = req.body;
+     const movie = await Movie.findByPk(movieId);
+     if (!movie || seats.length > movie.seatsAvailable - movie.seatsOccupied) {
+       return res.status(400).json({ error: 'Assentos insuficientes!' });
+     }
 
-sequelize.sync({ force: false, alter: true })
-  .then(() => console.log('✅ Tabelas sincronizadas!'))
-  .catch(err => console.error('❌ Erro sync:', err));
+     // Aplica promoção se houver
+     let price = 20.0;
+     if (promotionId) {
+       const promo = await Promotion.findByPk(promotionId);
+       if (promo) price *= (1 - promo.discount);
+     }
 
-// Rotas (sem auth)
-app.use('/api/auth', require('./routes/auth'));  // Mantido, mas simplificado
-app.use('/api/movies', require('./routes/movies'));
-app.use('/api/tickets', require('./routes/tickets'));
-app.use('/api/analytics', require('./routes/analytics'));
+     const ticket = await Ticket.create({ movieId, seats, customerName, price, promotionId });
 
-// Seed (simplificado, sem admin role)
-const seedData = async () => {
-  try {
-    const movieCount = await Movie.count();
-    if (movieCount === 0) {
-      await Movie.create({
-        title: 'Demon Slayer: Kimetsu no Yaiba',
-        duration: '2h35m',
-        genre: 'Animação',
-        synopsis: 'Tanjiro descobre sua família massacrada...',
-        poster: 'https://via.placeholder.com/300x450?text=Demon+Slayer',
-        cinemaLocation: 'Cinema do Bairro Local',
-        totalSeats: 100,
-        availableSeats: 80
-      });
-      console.log('✅ Filme inserido!');
-    }
+     // Atualiza ocupação
+     await movie.update({ seatsOccupied: movie.seatsOccupied + seats.length });
 
-    const promoCount = await Promotion.count();
-    if (promoCount === 0) {
-      await Promotion.create({
-        name: 'Pacote Família',
-        description: '20% off para grupos',
-        discount: 20,
-        type: 'package',
-        validFrom: new Date(),
-        validTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        isActive: true
-      });
-      console.log('✅ Promoção inserida!');
-    }
+     // Adiciona pontos de fidelidade (10 pontos por ingresso)
+     let loyalty = await Loyalty.findOne({ where: { customerEmail: customerName + '@email.com' } }); // Simula email
+     if (!loyalty) {
+       loyalty = await Loyalty.create({ customerEmail: customerName + '@email.com', points: 0 });
+     }
+     await loyalty.update({ points: loyalty.points + (10 * seats.length) });
 
-    // User de exemplo simples (sem role)
-    const userCount = await User.count();
-    if (userCount === 0) {
-      await User.create({
-        username: 'userdemo',
-        email: 'demo@cinema.com',
-        password: 'demo123'  // Hasheada auto
-      });
-      console.log('✅ User demo: demo@cinema.com / demo123');
-    }
-  } catch (err) {
-    console.error('❌ Erro seed:', err);
-  }
-};
+     res.json(ticket);
+   });
 
-sequelize.sync().then(seedData);
+   // Rotas para Promotions (promoções e fidelização)
+   app.get('/api/promotions', async (req, res) => {
+     const promotions = await Promotion.findAll();
+     res.json(promotions);
+   });
 
-// Saúde
-app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'MySQL' }));
+   app.post('/api/promotions', async (req, res) => {
+     const promotion = await Promotion.create(req.body);
+     res.json(promotion);
+   });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server em http://localhost:${PORT}`));
+   // Rota para Loyalty (ver/resgatar pontos)
+   app.get('/api/loyalty/:email', async (req, res) => {
+     const loyalty = await Loyalty.findOne({ where: { customerEmail: req.params.email } });
+     res.json(loyalty || { points: 0 });
+   });
+
+   app.post('/api/loyalty/redeem', async (req, res) => {
+     const { email, pointsToRedeem } = req.body;
+     const loyalty = await Loyalty.findOne({ where: { customerEmail: email } });
+     if (loyalty && loyalty.points >= pointsToRedeem) {
+       await loyalty.update({ points: loyalty.points - pointsToRedeem });
+       res.json({ success: true, remainingPoints: loyalty.points });
+     } else {
+       res.status(400).json({ error: 'Pontos insuficientes!' });
+     }
+   });
+
+   // Rotas para Campaigns (marketing — cria promoções compartilháveis)
+   app.post('/api/campaigns', async (req, res) => {
+     const { name, description } = req.body;
+     const promotion = await Promotion.create({ name, description, discount: 0.2 }); // 20% default para campanhas
+     const shareUrl = `http://localhost:8080/index.html?promo=${promotion.id}`; // Link para compartilhar
+     res.json({ promotion, shareUrl });
+   });
+
+   // Rotas para Reports (análise de público)
+   app.get('/api/reports', async (req, res) => {
+     const totalTickets = await Ticket.count();
+     const popularMovies = await Movie.findAll({
+       include: [{ model: Ticket, attributes: [] }],
+       attributes: ['title', [sequelize.fn('COUNT', sequelize.col('Tickets.id')), 'ticketCount']],
+       group: ['Movie.id'],
+       order: [['ticketCount', 'DESC']],
+       limit: 5
+     });
+     const peakHours = await Ticket.findAll({
+       attributes: [[sequelize.fn('HOUR', sequelize.col('createdAt')), 'hour'], [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+       group: ['hour'],
+       order: [['count', 'DESC']]
+     });
+
+     res.json({ totalTickets, popularMovies, peakHours });
+   });
+
+   app.listen(PORT, 'localhost', () => { // Só localhost, sem remoto
+     console.log(`Servidor rodando em http://localhost:${PORT}`);
+   });
+   

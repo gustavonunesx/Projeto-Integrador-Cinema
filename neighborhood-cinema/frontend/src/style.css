@@ -1,37 +1,9 @@
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
-}
-
-.hero {
-  color: white;
-  padding: 100px 0;
-  text-align: center;
-}
-
-.movie-card {
-  margin: 20px 0;
-  transition: transform 0.2s;
-}
-
-.movie-card:hover {
-  transform: scale(1.02);
-}
-
-.schedule-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.modal.show {
-  display: block !important;
-}
-
-.btn {
-  border-radius: 5px;
-}
-
-footer {
-  background-color: #343a40 !important;
-}
+   body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+   header { text-align: center; background: #333; color: white; padding: 20px; }
+   section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; }
+   form { display: flex; flex-direction: column; gap: 10px; max-width: 400px; }
+   button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+   button:hover { background: #0056b3; }
+   #movies-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; } /* Desktop grid, mobile stack */
+   @media (max-width: 600px) { body { margin: 10px; } form { max-width: 100%; } } /* Básico mobile, sem full remote */
+   
