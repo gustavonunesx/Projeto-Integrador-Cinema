@@ -263,9 +263,119 @@ nav ul li a:hover {
     margin-bottom: 10px;
 }
 
+/* Seção Filmes em Cartaz com Slider */
+.movies-section {
+    position: relative;
+    margin: 40px 0;
+}
+
+.movies-slider-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.movies-slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    gap: 20px;
+}
+
+.movie-slide {
+    flex: 0 0 calc(25% - 15px);
+    min-width: 250px;
+}
+
+
+/* Controles do Slider */
+.slider-controls-movies {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.slider-btn-movies {
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s;
+    pointer-events: all;
+    margin: 0 10px;
+}
+
+.slider-btn-movies:hover {
+    background: rgba(229, 9, 20, 0.9);
+    transform: scale(1.1);
+}
+
+.slider-btn-movies:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+/* Indicadores */
+.slider-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.indicator.active {
+    background: #e50914;
+    transform: scale(1.2);
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .movie-slide {
+        flex: 0 0 calc(33.333% - 13.33px);
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-slide {
+        flex: 0 0 calc(50% - 10px);
+    }
+    
+    .slider-btn-movies {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-slide {
+        flex: 0 0 100%;
+    }
+}
+
 /* Promoções */
 .promotions {
-    background-color: #1a1a1a;
+    background-color: #000000;
     color: white;
     padding: 40px 0;
     margin: 40px 0;

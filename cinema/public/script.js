@@ -144,6 +144,134 @@ class HeroSlider {
     }
 }
 
+// Slider para Filmes em Cartaz
+class MoviesSlider {
+    constructor() {
+        this.slider = document.getElementById('moviesSlider');
+        this.slides = document.querySelectorAll('.movie-slide');
+        this.prevBtn = document.getElementById('prevBtnMovies');
+        this.nextBtn = document.getElementById('nextBtnMovies');
+        this.indicatorsContainer = document.getElementById('moviesIndicators');
+        
+        this.currentPosition = 0;
+        this.slidesPerView = this.getSlidesPerView();
+        this.totalSlides = this.slides.length;
+        this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
+        
+        this.init();
+    }
+    
+    init() {
+        // Event listeners
+        this.prevBtn.addEventListener('click', () => this.prev());
+        this.nextBtn.addEventListener('click', () => this.next());
+        
+        // Criar indicadores
+        this.createIndicators();
+        
+        // Atualizar responsividade
+        window.addEventListener('resize', () => this.handleResize());
+        
+        // Atualizar controles
+        this.updateControls();
+    }
+    
+    getSlidesPerView() {
+        const width = window.innerWidth;
+        if (width < 480) return 1;
+        if (width < 768) return 2;
+        if (width < 1200) return 3;
+        return 4;
+    }
+    
+    createIndicators() {
+        const totalPages = Math.ceil(this.totalSlides / this.slidesPerView);
+        this.indicatorsContainer.innerHTML = '';
+        
+        for (let i = 0; i < totalPages; i++) {
+            const indicator = document.createElement('span');
+            indicator.className = `indicator ${i === 0 ? 'active' : ''}`;
+            indicator.addEventListener('click', () => this.goToPage(i));
+            this.indicatorsContainer.appendChild(indicator);
+        }
+    }
+    
+    updateSlider() {
+        const slideWidth = this.slides[0].offsetWidth + 20; // 20px é o gap
+        this.slider.style.transform = `translateX(-${this.currentPosition * slideWidth}px)`;
+        this.updateIndicators();
+        this.updateControls();
+    }
+    
+    updateIndicators() {
+        const currentPage = Math.floor(this.currentPosition / this.slidesPerView);
+        const indicators = this.indicatorsContainer.querySelectorAll('.indicator');
+        
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentPage);
+        });
+    }
+    
+    updateControls() {
+        this.prevBtn.disabled = this.currentPosition === 0;
+        this.nextBtn.disabled = this.currentPosition >= this.maxPosition;
+    }
+    
+    next() {
+        if (this.currentPosition < this.maxPosition) {
+            this.currentPosition += this.slidesPerView;
+            if (this.currentPosition > this.maxPosition) {
+                this.currentPosition = this.maxPosition;
+            }
+            this.updateSlider();
+        }
+    }
+    
+    prev() {
+        if (this.currentPosition > 0) {
+            this.currentPosition -= this.slidesPerView;
+            if (this.currentPosition < 0) {
+                this.currentPosition = 0;
+            }
+            this.updateSlider();
+        }
+    }
+    
+    goToPage(page) {
+        this.currentPosition = page * this.slidesPerView;
+        if (this.currentPosition > this.maxPosition) {
+            this.currentPosition = this.maxPosition;
+        }
+        this.updateSlider();
+    }
+    
+    handleResize() {
+        const oldSlidesPerView = this.slidesPerView;
+        this.slidesPerView = this.getSlidesPerView();
+        this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
+        
+        // Ajustar posição atual se necessário
+        if (this.currentPosition > this.maxPosition) {
+            this.currentPosition = this.maxPosition;
+        }
+        
+        // Recriar indicadores se o número de páginas mudou
+        const oldTotalPages = Math.ceil(this.totalSlides / oldSlidesPerView);
+        const newTotalPages = Math.ceil(this.totalSlides / this.slidesPerView);
+        
+        if (oldTotalPages !== newTotalPages) {
+            this.createIndicators();
+        }
+        
+        this.updateSlider();
+    }
+}
+
+// Inicializar o slider quando a página carregar
+document.addEventListener('DOMContentLoaded', () => {
+    new MoviesSlider();
+});
+
 // Inicializar o slider quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
     new HeroSlider();
