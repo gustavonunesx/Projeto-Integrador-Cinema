@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST MOVIES - Filme</title>
+    <link rel="stylesheet" href="movie.css">
+</head>
+<body>
+    <header class="movie-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">CineMax</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html" class="active">Início</a></li>
+                        <li><a href="#">Filmes</a></li>
+                        <li><a href="#">Cinemas</a></li>
+                        <li><a href="#">Promoções</a></li>
+                        <li><a href="login.html">Minha Conta</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero do Filme -->
+    <section class="movie-hero">
+        <div class="container">
+            <div class="movie-hero-content">
+                <div class="movie-poster">
+                    <img id="movie-poster-img" src="" alt="" class="poster-image">
+                </div>
+                <div class="movie-info">
+                    <h1 id="movie-title" class="movie-title">Carregando...</h1>
+                    <div class="movie-meta">
+                        <span id="movie-duration" class="duration"></span>
+                        <span id="movie-genre" class="genre"></span>
+                        <span id="movie-rating" class="rating"></span>
+                    </div>
+                    <p id="movie-description" class="movie-description"></p>
+                    
+                    <div class="movie-actions">
+                        <button class="btn-action" id="btn-remember">
+                            <span>💾</span>
+                            Lembreme
+                        </button>
+                        <button class="btn-action" id="btn-share">
+                            <span>📤</span>
+                            Compartilhar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trailer -->
+    <section class="trailer-section">
+        <div class="container">
+            <h2>Trailer</h2>
+            <div class="trailer-container">
+                <div class="video-placeholder" id="trailer-placeholder">
+                    <div class="play-button">▶</div>
+                    <p>Trailer do filme</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessões -->
+    <section class="sessions-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sessões</h2>
+                <nav class="sessions-nav">
+                    <a href="#sobre" class="active">Sobre o filme</a>
+                </nav>
+            </div>
+
+            <!-- Seleção de Data -->
+            <div class="date-selector">
+                <div class="date-option active" data-date="0">
+                    <span class="day">HOJE</span>
+                    <span class="date" id="date-0">11/10</span>
+                </div>
+                <div class="date-option" data-date="1">
+                    <span class="day">DOM</span>
+                    <span class="date" id="date-1">12/10</span>
+                </div>
+                <div class="date-option" data-date="2">
+                    <span class="day">SEG</span>
+                    <span class="date" id="date-2">13/10</span>
+                </div>
+                <div class="date-option" data-date="3">
+                    <span class="day">TER</span>
+                    <span class="date" id="date-3">14/10</span>
+                </div>
+                <div class="date-option" data-date="4">
+                    <span class="day">QUA</span>
+                    <span class="date" id="date-4">15/10</span>
+                </div>
+            </div>
+
+            <!-- Cinemas e Horários -->
+            <div class="cinemas-container">
+                <div class="cinema-card">
+                    <h3 class="cinema-name">Cine Araújo Campo Limpo</h3>
+                    <p class="cinema-address">Estrada de campo limpo, 459 | Santo Amaro</p>
+                    
+                    <div class="session-types">
+                        <div class="session-type">
+                            <div class="type-header">
+                                <span class="type-name">LASER</span>
+                                <span class="type-audio">DUBLADO</span>
+                            </div>
+                            <div class="session-times">
+                                <span class="time-option">20:30</span>
+                            </div>
+                        </div>
+                        
+                        <div class="session-type">
+                            <div class="type-header">
+                                <span class="type-name">VIP LASER</span>
+                                <span class="type-audio">DUBLADO</span>
+                            </div>
+                            <div class="session-times">
+                                <span class="time-option">16:00</span>
+                                <span class="time-option">18:30</span>
+                                <span class="time-option">21:00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="session-type">
+                            <div class="type-header">
+                                <span class="type-name">3D LASER</span>
+                                <span class="type-audio">DUBLADO</span>
+                            </div>
+                            <div class="session-times">
+                                <span class="time-option">18:00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="session-type">
+                            <div class="type-header">
+                                <span class="type-name">DOLEY ATMOS</span>
+                                <span class="type-audio">DUBLADO</span>
+                            </div>
+                            <div class="session-times">
+                                <span class="time-option">16:30</span>
+                                <span class="time-option">19:00</span>
+                                <span class="time-option">21:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-book" onclick="selectSession()">Escolher Assentos</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="movie-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sobre Nós</h3>
+                    <p>O CineMax é a maior rede de cinemas do país, oferecendo a melhor experiência em entretenimento.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <p>Email: contato@cinemax.com</p>
+                    <p>Telefone: (11) 1234-5678</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <p>Facebook | Instagram | Twitter</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineMax. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+  
+
+    <!-- Scripts -->
+    <script src="movie-data.js"></script>
+    <script src="movie.js"></script>
+</body>
+</html>
