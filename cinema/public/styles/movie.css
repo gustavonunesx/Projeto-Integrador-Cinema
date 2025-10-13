@@ -100,12 +100,15 @@ nav ul li a.active {
     font-size: 16px;
 }
 
-.movie-meta span {
+.movie-meta .duration,
+.movie-meta .genre {
     padding: 6px 12px;
     background: rgba(255,255,255,0.1);
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.2);
 }
+
+
 
 .movie-description {
     font-size: 18px;
@@ -168,18 +171,29 @@ nav ul li a.active {
     justify-content: center;
     color: white;
     cursor: pointer;
-    transition: transform 0.3s;
+    transition: all 0.3s;
 }
 
 .video-placeholder:hover {
     transform: scale(1.02);
+    background: linear-gradient(45deg, #2d1b1b, #3d2b2b);
+}
+
+.video-placeholder.hidden {
+    display: none;
 }
 
 .play-button {
     font-size: 60px;
     margin-bottom: 20px;
     color: #e50914;
+    transition: transform 0.3s;
 }
+
+.video-placeholder:hover .play-button {
+    transform: scale(1.1);
+}
+
 
 .video-placeholder p {
     font-size: 18px;
@@ -393,6 +407,73 @@ nav ul li a.active {
     padding-top: 20px;
     border-top: 1px solid #333;
     color: #666;
+}
+
+/* Sistema de Classificação Brasileiro */
+.rating-brazil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 11px;
+    margin-right: 10px;
+    border: 2px solid;
+    position: relative;
+}
+
+.rating-l {
+    background: #00A859;
+    color: white;
+    border-color: #388E3C;
+}
+
+.rating-10 {
+    background: #00A0E3;
+    color: white;
+    border-color: #1976D2;
+}
+
+.rating-12 {
+    background: #FFCC00;
+    color: white;
+    border-color: #F57C00;
+}
+
+.rating-14 {
+    background: #FF6600;
+    color: white;
+    border-color: #D32F2F;
+}
+
+.rating-16 {
+    background: #FF0000;
+    color: white;
+    border-color: #7B1FA2;
+}
+
+.rating-18 {
+    background: #000000;
+    color: white;
+    border-color: #333333;
+}
+
+/* Tooltip */
+.rating-brazil:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
 }
 
 /* Responsive */
