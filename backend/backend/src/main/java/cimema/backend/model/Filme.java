@@ -2,7 +2,9 @@ package cimema.backend.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -41,7 +43,7 @@ public class Filme {
     private String trailerUrl;
     
     @Column(nullable = false)
-    private Boolean emCartaz = true;
+    private Boolean emCartaz = (Boolean) true;
     
     private LocalDateTime dataCriacao = LocalDateTime.now();
     
