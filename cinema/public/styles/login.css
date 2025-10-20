@@ -5,8 +5,7 @@
 }
 
 body {
-    background:linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('../../images/testeSlayer.webp') 
-    no-repeat  center center fixed;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../../images/testeSlayer.webp') no-repeat center center fixed;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-size: cover;
     color: #fff;
@@ -14,7 +13,8 @@ body {
     justify-content: flex-end;
     display: flex;
     align-items: center;
-    padding-right: 290px;
+    padding-right: 110px;
+    padding-top: 70px;
 }
 
 .login-container {
@@ -23,33 +23,37 @@ body {
     padding: 20px;
 }
 
-/* Header */
+/* Header - NO CANTO SUPERIOR ESQUERDO DA TELA */
 .login-header {
-    text-align: center;
-    margin-bottom: 40px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    text-align: left;
 }
 
 .login-header h1 {
     font-size: 32px;
     font-weight: bold;
     color: #e50914;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .subtitle {
     color: #ccc;
     font-size: 14px;
     line-height: 1.4;
+    display: none; /* Só mostra o logo, subtítulo escondido */
 }
 
-/* Main Content */
+/* Main Content - COMPACTO */
 .login-main {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 30px;
     backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* NÃO estica - mantém tamanho original */
 }
 
 .login-screen {
@@ -365,9 +369,58 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Responsive */
-@media (max-width: 480px) {
+/* ================================ */
+/* RESPONSIVIDADE MÍNIMA - SÓ MOBILE */
+/* ================================ */
+
+/* Tablets e Mobile (até 1024px) */
+@media (max-width: 1024px) {
+    body {
+        justify-content: center;
+        padding-right: 0;
+        padding: 20px;
+    }
+    
+    .login-header {
+        position: static;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+        position: static;
+        font-size: 36px;
+    }
+    
+    .subtitle {
+        display: block;
+        font-size: 16px;
+    }
+}
+
+/* Mobile (até 768px) */
+@media (max-width: 768px) {
     .login-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
+    .login-main {
+        padding: 25px;
+    }
+    
+    .login-header h1 {
+        font-size: 32px;
+    }
+    
+    .login-screen h2 {
+        font-size: 22px;
+    }
+}
+
+/* Mobile Pequeno (até 480px) */
+@media (max-width: 480px) {
+    body {
         padding: 15px;
     }
     
