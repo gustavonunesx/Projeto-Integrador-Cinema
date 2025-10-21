@@ -1,6 +1,7 @@
 package cimema.backend.controller;
 
 import cimema.backend.model.Filme;
+import cimema.backend.service.FilmeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
