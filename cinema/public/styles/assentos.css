@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #ff0000;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+header h2 {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.screen-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.screen {
+    width: 80%;
+    height: 30px;
+    background-color: #fff;
+    color: #000;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.seats-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+#seats-map {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+}
+
+.seat {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.seat.available {
+    background-color: #fff;
+    color: #000;
+}
+
+.seat.available:hover {
+    transform: scale(1.1);
+    background-color: #ccc;
+}
+
+.seat.selected {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+.seat.occupied {
+    background-color: #333;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.info-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #111;
+    border-radius: 10px;
+}
+
+.legenda {
+    display: flex;
+    gap: 20px;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.resumo {
+    text-align: right;
+}
+
+.resumo h3 {
+    color: #ff0000;
+    margin-bottom: 10px;
+}
+
+.resumo p {
+    margin-bottom: 10px;
+}
+
+#confirm-btn {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#confirm-btn:hover {
+    background-color: #cc0000;
+}
+
+@media (max-width: 768px) {
+    #seats-map {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .info-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .legenda {
+        justify-content: space-around;
+    }
+    
+    .resumo {
+        text-align: center;
+    }
+}

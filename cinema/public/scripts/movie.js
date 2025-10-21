@@ -187,33 +187,33 @@ function formatarHorario(horario) {
 }
 
 // Função para selecionar horário
-function selectTime(sessaoId, horario) {
+function selectTime(sessaoId, horario, event) {  // Adicionei o parâmetro event
     // Remove seleção anterior
     document.querySelectorAll('.time-option').forEach(option => {
         option.classList.remove('selected');
     });
-    
+
     // Adiciona seleção atual
-    event.target.classList.add('selected');
-    
+    if (event && event.target) {  // Verificação segura
+        event.target.classList.add('selected');
+    }
+
     // Armazena a sessão selecionada
     sessionStorage.setItem('selectedSession', JSON.stringify({
         id: sessaoId,
         horario: horario
     }));
-    
     console.log(`Sessão ${sessaoId} selecionada para ${horario}`);
 }
 
-// Função para selecionar sessão (botão "Escolher Assentos")
+// Função para selecionar sessão (botão "Escolher Assentos") com popup
 async function selectSession() {
     const selectedSession = sessionStorage.getItem('selectedSession');
-    
     if (!selectedSession) {
         alert('Por favor, selecione um horário primeiro.');
         return;
     }
-    
+
     const sessionData = JSON.parse(selectedSession);
     
     try {
@@ -222,8 +222,70 @@ async function selectSession() {
         
         if (response.ok) {
             const assentos = await response.json();
-            // Redireciona para a página de seleção de assentos
-            window.location.href = `booking.html?sessao=${sessionData.id}&horario=${sessionData.horario}`;
+            
+            // Cria um popup/modal
+            const popup = window.open(
+                '', 
+                'Seleção de Assentos', 
+                'width=800,height=600,scrollbars=yes,resizable=yes'
+            );
+            
+            // Escreve o conteúdo básico do popup
+            popup.document.write(`
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Seleção de Assentos</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .assentos-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; }
+                        .assento { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+                        .disponivel { background-color: #4CAF50; color: white; }
+                        .indisponivel { background-color: #f44336; color: white; }
+                        .selecionado { background-color: #2196F3; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Selecionar Assentos</h1>
+                    <h2>Sessão: ${sessionData.horario}</h2>
+                    
+                    <div class="assentos-container" id="assentosContainer">
+                        <!-- Assentos serão renderizados aqui via JavaScript -->
+                    </div>
+                    
+                    <button id="confirmarAssentos">Confirmar Assentos</button>
+                    
+                    <script>
+                        const assentosData = ${JSON.stringify(assentos)};
+                        const container = document.getElementById('assentosContainer');
+                        
+                        // Renderiza os assentos
+                        assentosData.forEach(assento => {
+                            const assentoElement = document.createElement('div');
+                            assentoElement.className = 'assento ' + (assento.disponivel ? 'disponivel' : 'indisponivel');
+                            assentoElement.textContent = assento.numero;
+                            assentoElement.onclick = () => {
+                                if (assento.disponivel) {
+                                    assentoElement.classList.toggle('selecionado');
+                                }
+                            };
+                            container.appendChild(assentoElement);
+                        });
+                        
+                        document.getElementById('confirmarAssentos').onclick = () => {
+                            // Lógica para confirmar os assentos selecionados
+                            alert('Assentos confirmados!');
+                            window.close();
+                        };
+                    </script>
+                </body>
+                </html>
+            `);
+            
+            popup.document.close();
+            
         } else {
             alert('Erro ao carregar assentos. Tente novamente.');
         }
