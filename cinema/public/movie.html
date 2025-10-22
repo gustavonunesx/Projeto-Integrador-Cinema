@@ -153,5 +153,33 @@
             </div>
         </div>
     </footer>
+
+    <div id="seat-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSeatModal()">&times;</button>
+            <h2>Escolha seus assentos</h2>
+            
+            <div class="seat-selection-container">
+                <div class="screen-legend">TELA</div>
+                
+                <div id="seat-grid" class="seat-grid">
+                    <p>Carregando assentos...</p>
+                </div>
+                
+                <div class="seat-legend">
+                    <div class="legend-item"><span class="seat-icon available"></span> Disponível</div>
+                    <div class="legend-item"><span class="seat-icon selected"></span> Selecionado</div>
+                    <div class="legend-item"><span class="seat-icon occupied"></span> Ocupado</div>
+                </div>
+            </div>
+            
+            <div class="booking-summary">
+                <p>Sessão: <span id="summary-session-time">--:--</span></p>
+                <p>Assentos: <span id="summary-seats">Nenhum</span></p>
+                <p>Total: <span id="summary-total">R$ 0,00</span></p>
+                <button class="btn-confirm-booking" onclick="confirmBooking()">Confirmar Reserva</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

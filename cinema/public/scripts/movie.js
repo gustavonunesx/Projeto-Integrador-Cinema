@@ -173,26 +173,6 @@ function displayMovieData(movie, isFromBackend) {
     console.log(`[MOVIE] Dados exibidos - Origem: ${isFromBackend ? 'Backend' : 'Local'}`);
 }
 
-/**
- * CARREGAR SESSÕES DO BACKEND
- */
-async function loadSessoes(filmeId) {
-    const hoje = new Date();
-    const dataFormatada = ApiService.formatDate(hoje);
-    
-    console.log(`[MOVIE] Buscando sessões para ${filmeId} em ${dataFormatada}`);
-    
-    const result = await ApiService.getSessoesPorFilme(filmeId, dataFormatada);
-    
-    if (result.success && result.data) {
-        currentSessions = result.data;
-        console.log('[MOVIE] Sessões carregadas:', currentSessions.length);
-        displaySessoes(result.data);
-    } else {
-        console.warn('[MOVIE] Erro ao carregar sessões, usando fallback');
-        displayNoSessions();
-    }
-}
 
 /**
  * EXIBIR SESSÕES DO BACKEND
@@ -386,8 +366,263 @@ function updateDateSelector() {
         const dateOption = document.querySelector(`.date-option[data-date="${i}"]`);
         if (dateOption) {
             dateOption.dataset.fullDate = `${dataAtual.getFullYear()}-${mes}-${dia}`;
+            dateOption.addEventListener('click', handleDateClick);
         }
     }
+}
+
+/**
+ * CARREGAR SESSÕES DO BACKEND
+ */
+async function loadSessoes(filmeId, dataFormatada) {
+
+    console.log(`[MOVIE] Buscando sessões para ${filmeId} em ${dataFormatada}`);
+
+    // Mostra um "Carregando" temporário
+    const cinemasContainer = document.querySelector('.cinemas-container');
+    cinemasContainer.innerHTML = '<p style="color: white; text-align: center;">Carregando sessões...</p>';
+    
+    const result = await ApiService.getSessoesPorFilme(filmeId, dataFormatada);
+    
+    if (result.success && result.data && result.data.length > 0) {
+        currentSessions = result.data;
+        console.log('[MOVIE] Sessões carregadas:', currentSessions.length);
+        displaySessoes(result.data);
+    } else {
+        console.warn('[MOVIE] Erro ao carregar sessões ou nenhuma encontrada:', result.error);
+        displayNoSessions();
+    }
+}
+
+/**
+ * LIDAR COM O CLIQUE EM UM BOTÃO DE DATA
+ */
+async function handleDateClick(event) {
+    // 1. Pega o botão que foi clicado
+    const clickedButton = event.currentTarget;
+    
+    // 2. Pega a data completa (ex: '2025-10-23') que guardamos no dataset
+    const selectedDate = clickedButton.dataset.fullDate;
+    
+    if (!selectedDate || !currentMovie) return; // Não faz nada se não tiver data ou filme
+    
+    // 3. Atualiza o visual (destaca o botão clicado)
+    document.querySelectorAll('.date-option').forEach(button => {
+        button.classList.remove('active');
+    });
+    clickedButton.classList.add('active');
+    
+    // 4. Limpa a seleção de horário anterior
+    selectedSessionId = null;
+    
+    // 5. Chama a função loadSessoes com a nova data
+    await loadSessoes(currentMovie.id, selectedDate);
+}
+
+// ===================================
+//      LÓGICA DO MODAL DE ASSENTOS
+// ===================================
+
+let selectedSeats = []; // Guarda os assentos selecionados (ex: ['A1', 'A2'])
+let currentSessionDetails = null; // Guarda os dados da sessão (incluindo preço)
+
+/**
+ * 1. FUNÇÃO PRINCIPAL DO BOTÃO "ESCOLHER ASSENTOS"
+ */
+async function selectSession() {
+    // Verifica se um horário foi selecionado primeiro
+    if (!selectedSessionId) {
+        alert("Por favor, selecione um horário antes de escolher os assentos.");
+        return;
+    }
+    
+    // Mostra "Carregando" no modal
+    const modal = document.getElementById('seat-modal');
+    const grid = document.getElementById('seat-grid');
+    grid.innerHTML = '<p style="color: white; grid-column: 1 / -1;">Carregando assentos...</p>';
+    modal.style.display = 'flex';
+    
+    // Busca os dados dos assentos na API
+    console.log(`[MOVIE] Buscando assentos para a sessão: ${selectedSessionId}`);
+    const result = await ApiService.getAssentosSessao(selectedSessionId);
+    
+    if (result.success && result.data) {
+        currentSessionDetails = result.data; // Salva os dados (sessao, assentos)
+        console.log("[MOVIE] Assentos recebidos:", currentSessionDetails);
+        
+        // Desenha o grid de assentos
+        renderSeatGrid(currentSessionDetails);
+    } else {
+        alert(`Erro ao carregar assentos: ${result.error}`);
+        grid.innerHTML = `<p style="color: red; grid-column: 1 / -1;">${result.error}</p>`;
+    }
+}
+
+/**
+ * 2. DESENHA OS ASSENTOS NO MODAL
+ */
+function renderSeatGrid(sessionData) {
+    const grid = document.getElementById('seat-grid');
+    grid.innerHTML = ''; // Limpa o "Carregando"
+    selectedSeats = []; // Reseta a seleção
+    
+    const sessao = sessionData.sessao;
+    const assentos = sessionData.assentos;
+
+    if (!assentos || assentos.length === 0) {
+        grid.innerHTML = '<p style="color: white; grid-column: 1 / -1;">Não foi possível carregar os assentos.</p>';
+        return;
+    }
+    
+    // --- INÍCIO DA NOVA LÓGICA ---
+    let maxColumn = 0;
+    
+    // 1. Descobre o número máximo de colunas
+    assentos.forEach(assento => {
+        // Extrai o número do assento (ex: "A10" -> 10, "B8" -> 8, "C12" -> 12)
+        const colNumMatch = assento.numeroAssento.match(/\d+$/); // Pega a parte numérica
+        if (colNumMatch) {
+            const colNum = parseInt(colNumMatch[0]);
+            if (colNum > maxColumn) {
+                maxColumn = colNum; // Atualiza o máximo
+            }
+        }
+    });
+
+    // Se, por algum motivo, não encontrar (improvável), usa 10 como padrão
+    if (maxColumn === 0) {
+        maxColumn = 10; 
+    }
+    
+    console.log(`[MOVIE] Sala detectada com ${maxColumn} colunas.`);
+    
+    // 2. Define dinamicamente o número de colunas do grid
+    grid.style.gridTemplateColumns = `repeat(${maxColumn}, 1fr)`;
+    // --- FIM DA NOVA LÓGICA ---
+    
+    // 3. O resto da função continua igual, populando o grid
+    assentos.forEach(assento => {
+        const seatElement = document.createElement('div');
+        seatElement.classList.add('seat');
+        seatElement.dataset.numeroAssento = assento.numeroAssento;
+        seatElement.dataset.status = assento.status;
+        seatElement.textContent = assento.numeroAssento; // Ex: "A1"
+        
+        if (assento.status === 'DISPONIVEL') {
+            seatElement.classList.add('available');
+            seatElement.onclick = (e) => toggleSeatSelection(e, sessao.preco);
+        } else {
+            seatElement.classList.add('occupied');
+        }
+        grid.appendChild(seatElement);
+    });
+    
+    // Atualiza o resumo (preço, horário)
+    const sessionInfo = JSON.parse(sessionStorage.getItem('selectedSession'));
+    document.getElementById('summary-session-time').textContent = sessionInfo.horario;
+    updateBookingSummary(sessao.preco);
+}
+
+/**
+ * 3. ALTERNA A SELEÇÃO DE UM ASSENTO
+ */
+function toggleSeatSelection(event, preco) {
+    const seatElement = event.currentTarget;
+    const seatNumber = seatElement.dataset.numeroAssento;
+    
+    if (seatElement.classList.contains('selected')) {
+        // Desselecionar
+        seatElement.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+    } else {
+        // Selecionar
+        seatElement.classList.add('selected');
+        selectedSeats.push(seatNumber);
+    }
+    
+    // Atualiza o resumo (preço total, lista de assentos)
+    updateBookingSummary(preco);
+}
+
+/**
+ * 4. ATUALIZA O RESUMO (TOTAL A PAGAR, ASSENTOS)
+ */
+function updateBookingSummary(preco) {
+    const summarySeats = document.getElementById('summary-seats');
+    const summaryTotal = document.getElementById('summary-total');
+    
+    if (selectedSeats.length === 0) {
+        summarySeats.textContent = 'Nenhum';
+        summaryTotal.textContent = 'R$ 0,00';
+    } else {
+        summarySeats.textContent = selectedSeats.sort().join(', ');
+        const total = selectedSeats.length * parseFloat(preco);
+        summaryTotal.textContent = `R$ ${total.toFixed(2)}`;
+    }
+}
+
+/**
+ * 5. CONFIRMA A RESERVA
+ */
+async function confirmBooking() {
+    if (selectedSeats.length === 0) {
+        alert("Você precisa selecionar pelo menos um assento.");
+        return;
+    }
+    
+    // Pede o CPF (necessário para a API)
+    const cpf = prompt("Por favor, digite seu CPF para a reserva (apenas números):");
+    if (!cpf) {
+        alert("CPF é obrigatório para a reserva.");
+        return;
+    }
+    
+    console.log(`[MOVIE] Tentando reservar ${selectedSeats.length} assentos...`);
+    
+    // Aqui fazemos a chamada na API para CADA assento
+    // (O ideal seria uma API que aceita uma lista, mas seguimos o backend)
+    
+    let sucessos = [];
+    let falhas = [];
+    
+    const btnConfirm = document.querySelector('.btn-confirm-booking');
+    btnConfirm.disabled = true;
+    btnConfirm.textContent = 'Reservando...';
+    
+    for (const assento of selectedSeats) {
+        const result = await ApiService.reservarAssento(selectedSessionId, assento, cpf);
+        
+        if (result.success) {
+            sucessos.push(assento);
+        } else {
+            falhas.push(assento);
+        }
+    }
+    
+    btnConfirm.disabled = false;
+    btnConfirm.textContent = 'Confirmar Reserva';
+    
+    // Exibe o resultado
+    if (falhas.length > 0) {
+        alert(`Houve um erro ao reservar os assentos: ${falhas.join(', ')}.\n\nAssentos reservados com sucesso: ${sucessos.join(', ')}`);
+    } else {
+        alert(`Reserva realizada com sucesso!
+Assentos: ${sucessos.join(', ')}
+Total: ${document.getElementById('summary-total').textContent}`);
+    }
+    
+    // Fecha o modal e recarrega as sessões (para atualizar assentos disponíveis)
+    closeSeatModal();
+    const selectedDate = document.querySelector('.date-option.active').dataset.fullDate;
+    await loadSessoes(currentMovie.id, selectedDate);
+}
+
+/**
+ * 6. FECHA O MODAL
+ */
+function closeSeatModal() {
+    const modal = document.getElementById('seat-modal');
+    modal.style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', loadMovieData);

@@ -1,6 +1,7 @@
 package cimema.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class Assento {
 
     @ManyToOne
     @JoinColumn(name = "sessao_id", nullable = false)
-    @JsonManagedReference("sessao-assento")
+    @JsonIgnore
     private Sessao sessao;
 
     @Column(nullable = false)
