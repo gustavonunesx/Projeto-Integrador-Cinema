@@ -41,6 +41,99 @@ async function loadMovieData() {
     }
 }
 
+function getRatingIcon(classificacao) {
+    if (!classificacao) return '<span class="rating">--</span>';
+
+    let ratingClass = 'rating-l'; // Padrão: Livre
+    let ratingText = 'L';
+    let title = 'Livre para todos os públicos';
+
+    // Tenta extrair o número da string (ex: "14 anos" -> "14")
+    const match = classificacao.match(/\d+/);
+    const rating = match ? parseInt(match[0]) : 0;
+
+    if (rating === 10) {
+        ratingClass = 'rating-10';
+        ratingText = '10';
+        title = 'Não recomendado para menores de 10 anos';
+    } else if (rating === 12) {
+        ratingClass = 'rating-12';
+        ratingText = '12';
+        title = 'Não recomendado para menores de 12 anos';
+    } else if (rating === 14) {
+        ratingClass = 'rating-14';
+        ratingText = '14';
+        title = 'Não recomendado para menores de 14 anos';
+    } else if (rating === 16) {
+        ratingClass = 'rating-16';
+        ratingText = '16';
+        title = 'Não recomendado para menores de 16 anos';
+    } else if (rating >= 18) {
+        ratingClass = 'rating-18';
+        ratingText = '18';
+        title = 'Não recomendado para menores de 18 anos';
+    }
+
+    // Se a string for "Livre" ou "L"
+    if (classificacao.toUpperCase().includes('LIVRE') || classificacao.toUpperCase() === 'L') {
+        ratingClass = 'rating-l';
+        ratingText = 'L';
+        title = 'Livre para todos os públicos';
+    }
+
+    // Retorna o HTML baseado nas classes do movie.css
+    return `<span class="rating-brazil ${ratingClass}" title="${title}">${ratingText}</span>`;
+}
+
+function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+
+    let videoId = '';
+    
+    // Tenta extrair de URLs no formato "watch?v="
+    const urlParams = new URLSearchParams(new URL(url).search);
+    if (urlParams.has('v')) {
+        videoId = urlParams.get('v');
+    } else {
+        // Tenta extrair de URLs no formato "embed/"
+        const match = url.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            videoId = match[1];
+        }
+    }
+
+    if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    return null; // Retorna nulo se não conseguir extrair
+}
+
+/**
+ * CARREGA O TRAILER NO IFRAME
+ */
+function loadTrailer(trailerUrl) {
+    const placeholder = document.getElementById('trailer-placeholder');
+    const iframe = document.getElementById('trailer-iframe');
+    
+    const embedUrl = getYouTubeEmbedUrl(trailerUrl);
+
+    if (embedUrl) {
+        // Se temos uma URL válida
+        iframe.src = embedUrl;
+        iframe.style.display = 'block'; // Mostra o iframe
+        if (placeholder) {
+            placeholder.style.display = 'none'; // Esconde o "Carregando..."
+        }
+    } else {
+        // Se a URL for inválida ou nula
+        if (placeholder) {
+            placeholder.innerHTML = '<p>😕 Trailer indisponível.</p>';
+        }
+        iframe.style.display = 'none'; // Garante que o iframe está escondido
+    }
+}
+
 /**
  * EXIBIR DADOS DO FILME
  */
@@ -256,6 +349,45 @@ function selectTime(sessaoId, horario, preco) {
         filmeId: currentMovie?.id,
         filmeTitulo: currentMovie?.titulo || currentMovie?.title
     }));
+}
+
+function updateDateSelector() {
+    const diasSemana = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'];
+    const hoje = new Date();
+
+    for (let i = 0; i < 5; i++) { // Loop 5 vezes (para HOJE, AMANHÃ, +3 dias)
+        const dataAtual = new Date(hoje);
+        dataAtual.setDate(hoje.getDate() + i);
+
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0'); // Meses são 0-11
+        const diaSemana = diasSemana[dataAtual.getDay()];
+
+        const dateLabel = document.getElementById(`date-${i}`);
+        
+        // Pega a tag <span> que mostra o dia da semana
+        const dayLabel = dateLabel.previousElementSibling; 
+        
+        if (dayLabel) {
+             if (i === 0) {
+                dayLabel.textContent = 'HOJE';
+            } else if (i === 1) {
+                dayLabel.textContent = 'AMANHÃ';
+            } else {
+                dayLabel.textContent = diaSemana;
+            }
+        }
+
+        if (dateLabel) {
+            dateLabel.textContent = `${dia}/${mes}`;
+        }
+
+        // Adiciona a data completa no formato YYYY-MM-DD ao container
+        const dateOption = document.querySelector(`.date-option[data-date="${i}"]`);
+        if (dateOption) {
+            dateOption.dataset.fullDate = `${dataAtual.getFullYear()}-${mes}-${dia}`;
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadMovieData);
