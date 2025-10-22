@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineMax - Seu Cinema Online</title>
     <link rel="stylesheet" href="./styles/index.css">
+    
+    <!-- IMPORTANTE: Ordem correta dos scripts -->
     <script src="./scripts/movie-data.js"></script>
-    <script src="./scripts/index.js"></script>
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/index.js" defer></script>
 </head>
 <body>
-    <!-- Headeeer -->
+    <!-- Header -->
     <header>
         <div class="container">
             <div class="header-content">
@@ -20,14 +23,14 @@
                         <li><a href="#">Filmes</a></li>
                         <li><a href="#">Cinemas</a></li>
                         <li><a href="#">Promoções</a></li>
-                        <li><a href="#">Minha Conta</a></li>
+                        <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
             </div>
         </div>
     </header>
 
-   <!-- Banner Principal - Slider -->
+    <!-- Banner Principal - Slider -->
     <section class="hero">
         <div class="hero-slider">
             <!-- Slide 1 -->
@@ -88,7 +91,8 @@
         <section id="movies">
             <h2 class="section-title">Filmes em Alta</h2>
             <div class="movies-grid">
-                <!-- Filme 1 -->
+                <!-- Os filmes serão carregados dinamicamente do backend -->
+                <!-- Fallback caso backend não esteja disponível -->
                 <div class="movie-card" onclick="goToMovie('duna-2')">
                     <img src="../images/dunapt2-capa.webp" alt="Duna: Parte Dois" class="movie-poster">
                     <div class="movie-info">
@@ -97,7 +101,6 @@
                     </div>
                 </div>
                 
-                <!-- Filme 2 -->
                 <div class="movie-card" onclick="goToMovie('deadpool-3')">
                     <img src="../images/Deadpool_&_Wolverine_cartaz.jpg" alt="Deadpool & Wolverine" class="movie-poster">
                     <div class="movie-info">
@@ -106,7 +109,6 @@
                     </div>
                 </div>
                 
-                <!-- Filme 3 -->
                 <div class="movie-card" onclick="goToMovie('inside-out-2')">
                     <img src="../images/divertidamente-capa.webp" alt="Divertidamente 2" class="movie-poster">
                     <div class="movie-info">
@@ -115,7 +117,6 @@
                     </div>
                 </div>
                 
-                <!-- Filme 4 -->
                 <div class="movie-card" onclick="goToMovie('kingdom-of-the-planet-of-the-apes')">
                     <img src="../images/planeta-dos-macacos-capa.webp" alt="O Reino do Planeta dos Macacos" class="movie-poster">
                     <div class="movie-info">
@@ -126,15 +127,14 @@
             </div>
         </section>
 
-       
-
         <!-- Filmes em Cartaz -->
         <section class="movies-section">
             <h2 class="section-title">Em Cartaz</h2>
             
             <div class="movies-slider-container">
                 <div class="movies-slider" id="moviesSlider">
-                    <!-- Filme 1 -->
+                    <!-- Os filmes serão carregados dinamicamente -->
+                    <!-- Fallback -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('bad-boys-4')">
                             <img src="../images/badboys4.webp" alt="Bad Boys 4" class="movie-poster">
@@ -145,7 +145,6 @@
                         </div>
                     </div>
                     
-                    <!-- Filme 2 -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('the-fall-guy')">
                             <img src="../images/duble-capa.jpg" alt="O Dublê" class="movie-poster">
@@ -156,7 +155,6 @@
                         </div>
                     </div>
                     
-                    <!-- Filme 3 -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('furiosa')">
                             <img src="../images/furiosa-capa.webp" alt="Furiosa: Uma Saga Mad Max" class="movie-poster">
@@ -167,7 +165,6 @@
                         </div>
                     </div>
                     
-                    <!-- Filme 4 -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('godzilla-x-kong')">
                             <img src="../images/godzilla-capa.webp" alt="Godzilla x Kong: O Novo Império" class="movie-poster">
@@ -178,7 +175,6 @@
                         </div>
                     </div>
                     
-                    <!-- Filme 5 -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('oppenheimer')">
                             <img src="../images/openheimer-capa.webp" alt="Oppenheimer" class="movie-poster">
@@ -189,7 +185,6 @@
                         </div>
                     </div>
                     
-                    <!-- Filme 6 -->
                     <div class="movie-slide">
                         <div class="movie-card" onclick="goToMovie('barbie')">
                             <img src="../images/barbie-capa.jpg" alt="Barbie" class="movie-poster">
@@ -228,9 +223,6 @@
         </section>
     </main>
 
-
-     
-
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -254,8 +246,5 @@
             </div>
         </div>
     </footer>
-
-   
-   
 </body>
 </html>

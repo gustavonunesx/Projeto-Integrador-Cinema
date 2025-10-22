@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEST MOVIES - Filme</title>
     <link rel="stylesheet" href="./styles/movie.css">
+    
+    <!-- IMPORTANTE: Ordem correta dos scripts -->
     <script src="./scripts/movie-data.js"></script>
-    <script src="./scripts/movie.js"></script>
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/movie.js" defer></script>
 </head>
 <body>
     <header class="movie-header">
@@ -15,8 +18,8 @@
                 <div class="logo">CineMax</div>
                 <nav>
                     <ul>
-                        <li><a href="index.html" class="active">Início</a></li>
-                        <li><a href="#">Filmes</a></li>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="#" class="active">Filmes</a></li>
                         <li><a href="#">Cinemas</a></li>
                         <li><a href="#">Promoções</a></li>
                         <li><a href="login.html">Minha Conta</a></li>
@@ -31,16 +34,16 @@
         <div class="container">
             <div class="movie-hero-content">
                 <div class="movie-poster">
-                    <img id="movie-poster-img" src="" alt="" class="poster-image">
+                    <img id="movie-poster-img" src="../images/placeholder.jpg" alt="Carregando..." class="poster-image">
                 </div>
                 <div class="movie-info">
                     <h1 id="movie-title" class="movie-title">Carregando...</h1>
                     <div class="movie-meta">
-                        <span id="movie-duration" class="duration"></span>
-                        <span id="movie-genre" class="genre"></span>
-                        <span id="movie-rating" class="rating"></span>
+                        <span id="movie-duration" class="duration">--</span>
+                        <span id="movie-genre" class="genre">--</span>
+                        <span id="movie-rating" class="rating">--</span>
                     </div>
-                    <p id="movie-description" class="movie-description"></p>
+                    <p id="movie-description" class="movie-description">Carregando informações do filme...</p>
                     
                     <div class="movie-actions">
                         <button class="btn-action" id="btn-remember">
@@ -57,16 +60,15 @@
         </div>
     </section>
 
-        <!-- Trailer -->
+    <!-- Trailer -->
     <section class="trailer-section">
         <div class="container">
             <h2>Trailer</h2>
             <div class="trailer-container">
-                <!-- Substitua o placeholder por isto -->
                 <div class="video-wrapper" id="trailer-wrapper">
                     <div class="video-placeholder" id="trailer-placeholder">
                         <div class="play-button">▶</div>
-                        <p>Clique para assistir ao trailer</p>
+                        <p>Carregando trailer...</p>
                     </div>
                     <iframe 
                         id="trailer-iframe"
@@ -97,79 +99,32 @@
             <div class="date-selector">
                 <div class="date-option active" data-date="0">
                     <span class="day">HOJE</span>
-                    <span class="date" id="date-0">11/10</span>
+                    <span class="date" id="date-0">--/--</span>
                 </div>
                 <div class="date-option" data-date="1">
-                    <span class="day">DOM</span>
-                    <span class="date" id="date-1">12/10</span>
+                    <span class="day">AMANHÃ</span>
+                    <span class="date" id="date-1">--/--</span>
                 </div>
                 <div class="date-option" data-date="2">
                     <span class="day">SEG</span>
-                    <span class="date" id="date-2">13/10</span>
+                    <span class="date" id="date-2">--/--</span>
                 </div>
                 <div class="date-option" data-date="3">
                     <span class="day">TER</span>
-                    <span class="date" id="date-3">14/10</span>
+                    <span class="date" id="date-3">--/--</span>
                 </div>
                 <div class="date-option" data-date="4">
                     <span class="day">QUA</span>
-                    <span class="date" id="date-4">15/10</span>
+                    <span class="date" id="date-4">--/--</span>
                 </div>
             </div>
 
             <!-- Cinemas e Horários -->
             <div class="cinemas-container">
+                <!-- As sessões serão carregadas dinamicamente do backend -->
                 <div class="cinema-card">
-                    <h3 class="cinema-name">Cine Araújo Campo Limpo</h3>
-                    <p class="cinema-address">Estrada de campo limpo, 459 | Santo Amaro</p>
-                    
-                    <div class="session-types">
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">20:30</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">VIP LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">16:00</span>
-                                <span class="time-option">18:30</span>
-                                <span class="time-option">21:00</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">3D LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">18:00</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">DOLEY ATMOS</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">16:30</span>
-                                <span class="time-option">19:00</span>
-                                <span class="time-option">21:30</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-book" onclick="selectSession()">Escolher Assentos</button>
+                    <h3 class="cinema-name">Carregando sessões...</h3>
+                    <p class="cinema-address">Por favor, aguarde...</p>
                 </div>
             </div>
         </div>
@@ -198,6 +153,5 @@
             </div>
         </div>
     </footer>
-  
 </body>
 </html>
