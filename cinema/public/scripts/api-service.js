@@ -140,11 +140,12 @@ const ApiService = {
     async isBackendAvailable() {
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}/filmes`, {
-                method: 'HEAD',
+                method: 'GET',
                 signal: AbortSignal.timeout(2000)
             });
             return response.ok;
         } catch (error) {
+            console.warn("[API] isBackendAvailable falhou:", error); 
             return false;
         }
     },

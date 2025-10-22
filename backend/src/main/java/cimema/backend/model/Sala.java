@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -32,6 +35,7 @@ public class Sala {
     private Boolean ativa = true; // Se a sala está em funcionamento
 
     @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Sessao> sessoes = new ArrayList<>();
 }
 

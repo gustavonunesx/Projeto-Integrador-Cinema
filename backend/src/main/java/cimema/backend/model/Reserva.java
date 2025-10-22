@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "sessao_id", nullable = false)
+    @JsonManagedReference("sessao-reserva")
     private Sessao sessao;
 
     @ManyToOne

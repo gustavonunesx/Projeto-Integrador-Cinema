@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles/index.css">
     
     <!-- IMPORTANTE: Ordem correta dos scripts -->
-    <script src="./scripts/movie-data.js"></script>
+    
     <script src="./scripts/api-service.js"></script>
     <script src="./scripts/index.js" defer></script>
 </head>
@@ -91,39 +91,7 @@
         <section id="movies">
             <h2 class="section-title">Filmes em Alta</h2>
             <div class="movies-grid">
-                <!-- Os filmes serão carregados dinamicamente do backend -->
-                <!-- Fallback caso backend não esteja disponível -->
-                <div class="movie-card" onclick="goToMovie('duna-2')">
-                    <img src="../images/dunapt2-capa.webp" alt="Duna: Parte Dois" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Duna: Parte Dois</div>
-                        <div class="movie-genre">Ficção Científica, Aventura</div>
-                    </div>
-                </div>
-                
-                <div class="movie-card" onclick="goToMovie('deadpool-3')">
-                    <img src="../images/Deadpool_&_Wolverine_cartaz.jpg" alt="Deadpool & Wolverine" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Deadpool & Wolverine</div>
-                        <div class="movie-genre">Ação, Comédia</div>
-                    </div>
-                </div>
-                
-                <div class="movie-card" onclick="goToMovie('inside-out-2')">
-                    <img src="../images/divertidamente-capa.webp" alt="Divertidamente 2" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Divertidamente 2</div>
-                        <div class="movie-genre">Animação, Comédia</div>
-                    </div>
-                </div>
-                
-                <div class="movie-card" onclick="goToMovie('kingdom-of-the-planet-of-the-apes')">
-                    <img src="../images/planeta-dos-macacos-capa.webp" alt="O Reino do Planeta dos Macacos" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">O Reino do Planeta dos Macacos</div>
-                        <div class="movie-genre">Ficção Científica, Ação</div>
-                    </div>
-                </div>
+                <p style="color: white;">Carregando filmes...</p> 
             </div>
         </section>
 
@@ -133,73 +101,7 @@
             
             <div class="movies-slider-container">
                 <div class="movies-slider" id="moviesSlider">
-                    <!-- Os filmes serão carregados dinamicamente -->
-                    <!-- Fallback -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('bad-boys-4')">
-                            <img src="../images/badboys4.webp" alt="Bad Boys 4" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Bad Boys 4</div>
-                                <div class="movie-genre">Ação, Comédia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('the-fall-guy')">
-                            <img src="../images/duble-capa.jpg" alt="O Dublê" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">O Dublê</div>
-                                <div class="movie-genre">Ação, Comédia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('furiosa')">
-                            <img src="../images/furiosa-capa.webp" alt="Furiosa: Uma Saga Mad Max" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Furiosa: Uma Saga Mad Max</div>
-                                <div class="movie-genre">Ação, Ficção Científica</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('godzilla-x-kong')">
-                            <img src="../images/godzilla-capa.webp" alt="Godzilla x Kong: O Novo Império" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Godzilla x Kong: O Novo Império</div>
-                                <div class="movie-genre">Ação, Ficção Científica</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('oppenheimer')">
-                            <img src="../images/openheimer-capa.webp" alt="Oppenheimer" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Oppenheimer</div>
-                                <div class="movie-genre">Drama, Histórico</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('barbie')">
-                            <img src="../images/barbie-capa.jpg" alt="Barbie" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Barbie</div>
-                                <div class="movie-genre">Comédia, Aventura</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Controles do Slider -->
-                <div class="slider-controls-movies">
-                    <button class="slider-btn-movies prev-btn-movies" id="prevBtnMovies">‹</button>
-                    <button class="slider-btn-movies next-btn-movies" id="nextBtnMovies">›</button>
+                    <p style="color: white;">Carregando...</p>
                 </div>
             </div>
             

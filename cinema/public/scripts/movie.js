@@ -257,3 +257,5 @@ function selectTime(sessaoId, horario, preco) {
         filmeTitulo: currentMovie?.titulo || currentMovie?.title
     }));
 }
+
+document.addEventListener('DOMContentLoaded', loadMovieData);
