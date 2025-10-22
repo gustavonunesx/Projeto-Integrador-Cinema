@@ -37,9 +37,5 @@ public class Reserva {
     private StatusReserva status = StatusReserva.CONFIRMADA;
 }
 
-enum StatusReserva {
-    CONFIRMADA,
-    CANCELADA,
-    FINALIZADA
-}
+
 

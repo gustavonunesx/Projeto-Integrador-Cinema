@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "assentos")
 @Entity
+@Table(name = "assentos")
 public class Assento {
 
     @Id
@@ -28,9 +28,3 @@ public class Assento {
     private StatusAssento status = StatusAssento.DISPONIVEL;
 }
 
-// Enum separado em arquivo público
-enum StatusAssento {
-    DISPONIVEL,
-    OCUPADO,
-    RESERVADO
-}

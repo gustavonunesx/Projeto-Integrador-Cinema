@@ -3,6 +3,7 @@ package cimema.backend.service;
 import cimema.backend.model.Assento;
 import cimema.backend.model.Reserva;
 import cimema.backend.model.Sessao;
+import cimema.backend.model.StatusAssento;
 import cimema.backend.repository.AssentoRepository;
 import cimema.backend.repository.ReservaRepository;
 import cimema.backend.repository.SessaoRepository;
@@ -104,13 +105,13 @@ public class SessaoService {
 
         Assento assento = assentoOpt.get();
 
-        // Verificar se o assento está disponível
-        if (!assento.getStatus().toString().equals("DISPONIVEL")) {
+        // Verificar se o assento está disponível (comparando com o enum correto)
+        if (assento.getStatus() != StatusAssento.DISPONIVEL) {
             return ResponseEntity.badRequest().body("Assento já está ocupado ou reservado");
         }
 
         // Marcar assento como reservado
-        assento.setStatus(cimema.backend.model.StatusAssento.RESERVADO);
+        assento.setStatus(StatusAssento.RESERVADO);
         assentoRepository.save(assento);
 
         // Criar a reserva
@@ -149,4 +150,5 @@ public class SessaoService {
         return sessaoRepository.findSessoesComVagas();
     }
 }
+
 
