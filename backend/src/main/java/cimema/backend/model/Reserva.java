@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -27,6 +28,7 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "assento_id", nullable = false)
+    @JsonIgnore
     private Assento assento;
 
     @Column(nullable = false)

@@ -32,7 +32,6 @@ public class Sessao {
 
     @ManyToOne
     @JoinColumn(name = "sala_id", nullable = false)
-    @JsonIgnore
     private Sala sala;
 
     @Column(nullable = false)
