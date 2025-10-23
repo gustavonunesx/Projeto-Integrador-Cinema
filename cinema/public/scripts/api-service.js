@@ -103,9 +103,11 @@ const ApiService = {
 
     // Reservar um assento
     async reservarAssento(sessaoId, numeroAssento, cpf) {
-        return await this.request(`/sessoes/${sessaoId}/reservar`, {
-            method: 'POST',
-            body: JSON.stringify({ numeroAssento, cpf })
+        // Constrói a URL com os parâmetros que o @RequestParam espera
+        const endpoint = `/sessoes/${sessaoId}/reservar?numeroAssento=${encodeURIComponent(numeroAssento)}&cpf=${encodeURIComponent(cpf)}`;
+
+        return await this.request(endpoint, { 
+             method: 'POST',
         });
     },
 
