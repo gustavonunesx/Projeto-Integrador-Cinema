@@ -181,5 +181,23 @@
             </div>
         </div>
     </div>
+
+    <div id="alert-modal" class="modal-overlay" style="display: none;" onclick="closeCustomAlert()">
+        <div class="modal-content alert-content" onclick="event.stopPropagation()">
+            <h3 id="alert-title">Atenção</h3>
+            <p id="alert-message">Mensagem de alerta aqui.</p>
+            <button class="btn-confirm-booking" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="cpf-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content alert-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeCpfModal()">&times;</button>
+            <h3>Confirmação de Reserva</h3>
+            <p>Por favor, digite seu CPF para finalizar a reserva:</p>
+            <input type="text" id="cpf-input" class="cpf-input" placeholder="Apenas números (11 dígitos)">
+            <button class="btn-confirm-booking" onclick="handleCpfSubmit()">Confirmar CPF</button>
+        </div>
+    </div>
 </body>
 </html>

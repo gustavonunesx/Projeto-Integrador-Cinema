@@ -353,6 +353,13 @@ nav ul li a.active {
     color: #e50914;
 }
 
+.time-option.selected {
+    background-color: #e50914; /* Cor principal do site */
+    color: white;              /* Texto branco */
+    border-color: #b8070f;     /* Borda um pouco mais escura */
+    transform: scale(1.05);    /* Efeito de "zoom" leve */
+}
+
 .btn-book {
     width: 100%;
     padding: 15px;
@@ -764,4 +771,52 @@ nav ul li a.active {
     .seat-legend {
         gap: 10px; /* Menos espaço na legenda */
     }
+}
+
+/* =================================== */
+/* ESTILOS DOS MODAIS DE ALERTA E CPF */
+/* =================================== */
+
+/* Conteúdo de alerta (menor que o modal de assentos) */
+.alert-content {
+    max-width: 400px;
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.alert-content h3 {
+    color: #e50914;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.alert-content p {
+    color: #ccc;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* Estilo do campo de input do CPF */
+.cpf-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #555;
+    background: #111;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.cpf-input:focus {
+    outline: none;
+    border-color: #e50914;
+}
+
+/* O botão de fechar (X) para o modal de CPF */
+.alert-content .modal-close {
+    top: 10px;
+    right: 15px;
 }

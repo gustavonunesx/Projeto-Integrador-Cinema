@@ -431,8 +431,8 @@ let currentSessionDetails = null; // Guarda os dados da sessão (incluindo preç
  */
 async function selectSession() {
     // Verifica se um horário foi selecionado primeiro
-    if (!selectedSessionId) {
-        alert("Por favor, selecione um horário antes de escolher os assentos.");
+   if (!selectedSessionId) {
+        showCustomAlert("Por favor, selecione um horário antes de escolher os assentos.");
         return;
     }
     
@@ -566,12 +566,13 @@ function updateBookingSummary(preco) {
  */
 async function confirmBooking() {
     if (selectedSeats.length === 0) {
-        alert("Você precisa selecionar pelo menos um assento.");
+        // Reutiliza o alerta customizado
+        showCustomAlert("Você precisa selecionar pelo menos um assento.");
         return;
     }
     
     // Pede o CPF (necessário para a API)
-    const cpf = prompt("Por favor, digite seu CPF para a reserva (apenas números):");
+    showCpfModal();
     if (!cpf) {
         alert("CPF é obrigatório para a reserva.");
         return;
@@ -625,4 +626,99 @@ function closeSeatModal() {
     modal.style.display = 'none';
 }
 
+
+// ===================================
+//      LÓGICA DOS MODAIS DE ALERTA
+// ===================================
+
+/**
+ * MOSTRA UM ALERTA CUSTOMIZADO
+ */
+function showCustomAlert(message, title = "Atenção") {
+    document.getElementById('alert-title').textContent = title;
+    document.getElementById('alert-message').textContent = message;
+    document.getElementById('alert-modal').style.display = 'flex';
+}
+
+/**
+ * FECHA O ALERTA CUSTOMIZADO
+ */
+function closeCustomAlert() {
+    document.getElementById('alert-modal').style.display = 'none';
+}
+
+/**
+ * MOSTRA O MODAL DE CPF
+ */
+function showCpfModal() {
+    document.getElementById('cpf-input').value = ''; // Limpa o campo
+    document.getElementById('cpf-modal').style.display = 'flex';
+    document.getElementById('cpf-input').focus(); // Foca no campo
+}
+
+/**
+ * FECHA O MODAL DE CPF
+ */
+function closeCpfModal() {
+    document.getElementById('cpf-modal').style.display = 'none';
+}
+
+/**
+ * LIDA COM O ENVIO DO CPF
+ * (Esta é a 2ª parte da antiga função 'confirmBooking')
+ */
+async function handleCpfSubmit() {
+    const cpfInput = document.getElementById('cpf-input');
+    const cpf = cpfInput.value.trim();
+
+    // Validação simples de CPF
+    if (!cpf || cpf.length !== 11 || !/^\d+$/.test(cpf)) {
+        // Reutiliza o alerta customizado!
+        closeCpfModal(); // Fecha o modal de CPF
+        showCustomAlert("CPF inválido. Por favor, digite os 11 dígitos, apenas números.");
+        return; // Para a execução
+    }
+
+    // Fecha o modal de CPF
+    closeCpfModal();
+
+    console.log(`[MOVIE] Tentando reservar ${selectedSeats.length} assentos...`);
+    
+    let sucessos = [];
+    let falhas = [];
+    
+    // Mostra um "Carregando" no botão do modal de assentos
+    const btnConfirm = document.querySelector('.btn-confirm-booking');
+    btnConfirm.disabled = true;
+    btnConfirm.textContent = 'Reservando...';
+    
+    for (const assento of selectedSeats) {
+        const result = await ApiService.reservarAssento(selectedSessionId, assento, cpf);
+        
+        if (result.success) {
+            sucessos.push(assento);
+        } else {
+            falhas.push(assento);
+        }
+    }
+    
+    btnConfirm.disabled = false;
+    btnConfirm.textContent = 'Confirmar Reserva';
+    
+    // Fecha o modal principal (de assentos)
+    closeSeatModal();
+
+    // Exibe o resultado final com o alerta customizado
+    if (falhas.length > 0) {
+        showCustomAlert(`Houve um erro ao reservar os assentos: ${falhas.join(', ')}.\n\nReservados com sucesso: ${sucessos.join(', ')}`, "Erro na Reserva");
+    } else {
+        showCustomAlert(`Reserva realizada com sucesso!
+Assentos: ${sucessos.join(', ')}
+Total: ${document.getElementById('summary-total').textContent}`, "Reserva Confirmada!");
+    }
+    
+    // Recarrega as sessões (para atualizar assentos disponíveis)
+    const selectedDate = document.querySelector('.date-option.active').dataset.fullDate;
+    await loadSessoes(currentMovie.id, selectedDate);
+}
 document.addEventListener('DOMContentLoaded', loadMovieData);
