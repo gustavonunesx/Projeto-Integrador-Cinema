@@ -99,26 +99,100 @@ async function loadFilmesEmCartaz() {
 function updateFilmesEmCartazSlider(filmes) {
     const slider = document.getElementById('moviesSlider');
     
-    if (!slider) return;
+    if (!slider) {
+        console.error("[INDEX] Elemento do slider 'moviesSlider' não encontrado.");
+        return;
+    }
     
-    // Limpar slider
+    // Limpar slider (removendo o <p>Carregando...</p>)
     slider.innerHTML = '';
     
-    // Adicionar filmes
-    filmes.forEach(filme => {
-        const slide = document.createElement('div');
-        slide.className = 'movie-slide';
-        
-        const card = createMovieCard(filme);
-        slide.appendChild(card);
-        
-        slider.appendChild(slide);
-    });
-    
-    // Reinicializar o slider
-    if (window.moviesSliderInstance) {
-        window.moviesSliderInstance.updateSlider();
+    // Adicionar filmes do backend
+    if (filmes && filmes.length > 0) {
+        filmes.forEach(filme => {
+            const slide = document.createElement('div');
+            slide.className = 'movie-slide';
+            
+            const card = createMovieCard(filme); // Reutiliza a função que cria o card
+            slide.appendChild(card);
+            
+            slider.appendChild(slide);
+        });
+    } else {
+        // Caso a API retorne uma lista vazia
+        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
+        // Limpa os indicadores se não houver filmes
+        const indicatorsContainer = document.getElementById('moviesIndicators');
+        if (indicatorsContainer) indicatorsContainer.innerHTML = '';
+        return; // Não precisa inicializar o slider se não houver filmes
     }
+    
+    // --- INÍCIO DA CORREÇÃO IMPORTANTE ---
+    // Reinicializar e Atualizar o slider
+    if (window.moviesSliderInstance) {
+        const sliderInstance = window.moviesSliderInstance;
+        
+        if(!slider){
+            console.log(`[INDEX] Atualizando slider com ${filmes.length} filmes.`);
+            return;
+        }
+
+        slider.innerHTML = '';
+
+        if (filmes && filmes.length > 0) {
+            filmes.forEach(filme => {
+                const slide = document.createElement('div');
+                slide.className = 'movie-slide';
+                const card = createMovieCard(filme);
+                slide.appendChild(card);
+                slider.appendChild(slide);
+            });
+        console.log(`[INDEX] ${filmes.length} slides adicionados ao HTML do slider.`);
+
+        // --- CORREÇÃO AQUI ---
+        // Chama o método reinitialize DEPOIS que os slides estão no HTML
+        if (window.moviesSliderInstance) {
+             window.moviesSliderInstance.reinitialize(); 
+        } else {
+            console.warn("[INDEX] Instância do slider não encontrada para reinicializar.");
+        }
+        // --- FIM DA CORREÇÃO ---
+
+    } else {
+        // Caso a API retorne uma lista vazia
+        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
+        // Limpa os indicadores se não houver filmes
+        if (window.moviesSliderInstance && window.moviesSliderInstance.indicatorsContainer) {
+            window.moviesSliderInstance.indicatorsContainer.innerHTML = '';
+        }
+    }
+
+        
+
+        // 1. Atualiza a lista interna de slides DENTRO do objeto sliderInstance
+        sliderInstance.slides = slider.querySelectorAll('.movie-slide'); 
+        sliderInstance.totalSlides = sliderInstance.slides.length;
+        
+        // 2. Recalcula quantas páginas/posições existem
+        // É importante recalcular slidesPerView caso a janela tenha mudado de tamanho
+        sliderInstance.slidesPerView = sliderInstance.getSlidesPerView(); 
+        sliderInstance.maxPosition = Math.max(0, sliderInstance.totalSlides - sliderInstance.slidesPerView);
+        
+        // 3. Garante que a posição atual não seja inválida (ex: estava na pág 3 e agora só tem 2)
+        // Reinicia na primeira página para simplificar
+        sliderInstance.currentPosition = 0; 
+
+        // 4. Recria os indicadores (bolinhas) com base no novo número de slides e páginas
+        sliderInstance.createIndicators(); 
+        
+        // 5. Atualiza a posição visual do slider (translateX) e habilita/desabilita os botões
+        sliderInstance.updateSlider(); 
+        
+        console.log("[INDEX] Slider de 'Em Cartaz' atualizado.");
+    } else {
+        console.warn("[INDEX] Instância do slider (window.moviesSliderInstance) não encontrada para atualização.");
+    }
+    // --- FIM DA CORREÇÃO IMPORTANTE ---
 }
 
 /**
@@ -317,6 +391,34 @@ class MoviesSlider {
         window.addEventListener('resize', () => this.handleResize());
         this.updateControls();
     }
+
+    reinitialize() {
+        console.log("[Slider] Reinicializando...");
+        this.slides = this.slider.querySelectorAll('.movie-slide');
+        this.totalSlides = this.slides.length;
+        
+        if (this.totalSlides === 0) {
+            console.warn("[Slider] Nenhum slide encontrado para inicializar.");
+             // Limpa indicadores se não houver slides
+            if (this.indicatorsContainer) this.indicatorsContainer.innerHTML = '';
+             // Desabilita botões
+            if (this.prevBtn) this.prevBtn.disabled = true;
+            if (this.nextBtn) this.nextBtn.disabled = true;
+            return; 
+        }
+
+        console.log(`[Slider] Encontrados ${this.totalSlides} slides.`);
+        
+        this.slidesPerView = this.getSlidesPerView();
+        this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
+        
+        // Sempre volta para o início ao recarregar
+        this.currentPosition = 0; 
+
+        this.createIndicators(); // Recria as bolinhas
+        this.updateSlider();     // Atualiza a posição visual e os botões
+        console.log("[Slider] Reinicialização completa.");
+    }
     
     getSlidesPerView() {
         const width = window.innerWidth;
@@ -347,6 +449,7 @@ class MoviesSlider {
         this.slider.style.transform = `translateX(-${this.currentPosition * slideWidth}px)`;
         this.updateIndicators();
         this.updateControls();
+        console.log(`[Slider] Atualizando para posição ${this.currentPosition}, max ${this.maxPosition}`);
     }
     
     updateIndicators() {
@@ -421,7 +524,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Inicializar sliders
     new HeroSlider();
-    window.moviesSliderInstance = new MoviesSlider();
+    window.moviesSliderInstance = new MoviesSlider(); 
+  
+    window.moviesSliderInstance.reinitialize(); // Faz a inicialização completa
     
     // Carregar filmes do backend
     await loadMoviesFromBackend();

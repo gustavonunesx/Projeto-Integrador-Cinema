@@ -47,6 +47,13 @@ INSERT INTO filmes (id, titulo, duracao, genero, classificacao, descricao, poste
 'Barbie vive em Barbieland, um mundo perfeito onde todos os Barbies e Kens passam os dias em festas e alegria. No entanto, quando ela começa a ter pensamentos sobre a morte e percebe que algo está errado, precisa viajar para o mundo real.',
 '../images/barbie-capa.jpg', '../images/barbie-banner.jpg', 'https://www.youtube.com/embed/pBk4NYhWNMM', TRUE);
 
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'kingdom-of-the-planet-of-the-apes';
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'inside-out-2';
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'furiosa';
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'the-fall-guy';
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'godzilla-x-kong';
+UPDATE filmes SET em_cartaz = FALSE WHERE id = 'oppenheimer';
+
 -- ================================================
 -- 4. POPULAR SALAS
 -- ================================================
