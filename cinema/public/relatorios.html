@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - CineMax Admin</title>
+    <link rel="stylesheet" href="./styles/movie.css">
+    <link rel="stylesheet" href="./styles/relatorios.css">
+
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/relatorios.js" defer></script>
+</head>
+<body>
+    <header class="movie-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">CineMax (Admin)</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Ver Site</a></li>
+                        <li><a href="#" class="active">Relatórios</a></li>
+                        </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="report-section">
+            <h1 class="report-title">Painel de Relatórios</h1>
+            
+            <div class="date-picker-grid">
+                <div>
+                    <label for="start-date">Data Inicial:</label>
+                    <input type="date" id="start-date" class="date-input">
+                </div>
+                <div>
+                    <label for="end-date">Data Final:</label>
+                    <input type="date" id="end-date" class="date-input">
+                </div>
+                <button id="btn-gerar" class="btn-gerar">Gerar Relatório</button>
+            </div>
+            
+            <button id="btn-download" class="btn-download" style="display: none;">
+                Baixar Relatório (CSV)
+            </button>
+        </section>
+
+        <div class="report-results-grid">
+            
+            <div class="report-card">
+                <h2>Filmes Mais Populares</h2>
+                <div id="filmes-populares-container">
+                    <p>Selecione um período e clique em "Gerar".</p>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h2>Horários de Pico</h2>
+                <div id="horarios-movimento-container">
+                    <p>Selecione um período e clique em "Gerar".</p>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h2>Dias Mais Movimentados</h2>
+                <div id="dias-movimento-container">
+                    <p>Selecione um período e clique em "Gerar".</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="movie-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 CineMax Admin</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
