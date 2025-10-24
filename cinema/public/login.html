@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST MOVIES - Login</title>
+    <link rel="stylesheet" href="./styles/login.css">
+    <script src="./scripts/login.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <header class="login-header">
+            <h1>BEST MOVIES</h1>
+            <p class="subtitle">Crie sua conta e seja avisado sobre as grandes pré-estreias!</p>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="login-main">
+            <!-- Tela 1: CPF/Email -->
+            <div class="login-screen active" id="screen1">
+                <h2>Faça seu login agora!</h2>
+                <p class="instruction">Digite seu CPF ou E-mail para continuar</p>
+                
+                <form class="login-form">
+                    <div class="input-group">
+                        <label for="cpfEmail">*CPF ou Email</label>
+                        <input type="text" id="cpfEmail" name="cpfEmail" required>
+                    </div>
+                    
+                    <button type="button" class="btn-primary" onclick="nextScreen()">Continuar</button>
+                </form>
+
+                <div class="register-section">
+                    <p>Ainda não tem conta?</p>
+                    <button class="btn-register" onclick="showRegister()">Criar conta agora</button>
+                </div>
+
+                <div class="social-divider">
+                    <span>Ou entre com uma rede social</span>
+                </div>
+
+                <button class="btn-google">
+                    <span>Continuar com o Google</span>
+                </button>
+            </div>
+
+            <!-- Tela 2: Senha -->
+            <div class="login-screen" id="screen2">
+                <div class="back-header">
+                    <button class="back-btn" onclick="prevScreen()">‹</button>
+                    <h3>Calma está quase lá!</h3>
+                </div>
+                <p class="instruction">Use sua senha ou entre com um código!</p>
+                
+                <div class="user-info">
+                    <div class="cpf-display">
+                        <span>CPF</span>
+                        <strong id="displayCpf">XXXXXXXXXXX</strong>
+                        <button class="change-btn" onclick="changeUser()">Trocar</button>
+                    </div>
+                </div>
+                
+                <form class="login-form">
+                    <div class="input-group">
+                        <label for="password">*Senha</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <a href="#" class="forgot-link">Perdi meus dados de acesso</a>
+                    
+                    <button type="button" class="btn-primary" onclick="login()">Entrar</button>
+                </form>
+            </div>
+
+            <!-- Tela 3: Cadastro -->
+            <div class="login-screen" id="screen3">
+                <div class="back-header">
+                    <button class="back-btn" onclick="showScreen(1)">‹</button>
+                    <h2>Vamos começar!</h2>
+                </div>
+                <p class="instruction">Siga os passos e crie sua conta</p>
+                
+                <form class="login-form">
+                    <div class="input-group">
+                        <label for="name">*Nome completo</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cpfRegister">*CPF</label>
+                        <input type="text" id="cpfRegister" name="cpfRegister" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="phone">*Telefone</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="passwordRegister">*Senha</label>
+                        <input type="password" id="passwordRegister" name="passwordRegister" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">*Confirmar senha</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <button type="button" class="btn-primary" onclick="register()">Criar conta</button>
+                </form>
+
+                <div class="login-link">
+                    <p>Já tem cadastro? <a href="#" onclick="showScreen(1)">Fazer login</a></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="login-footer">
+            <p><strong>BEST MOVIES Ltda / CNPJ: 00.860.640/0001-71</strong></p>
+            <p>Endereço: Rua da Quitanda, 86 - 9º andar - Centro – Rio de Janeiro, RJ - 20091-902</p>
+            <p>Atendimento ao cliente</p>
+            <p class="copyright">© Copyright BEST MOVIES / Todos os direitos reservados ©</p>
+        </footer>
+    </div>
+
+   
+</body>
+</html>

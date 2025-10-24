@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMax - Seu Cinema Online</title>
+    <link rel="stylesheet" href="./styles/index.css">
+    
+    <!-- IMPORTANTE: Ordem correta dos scripts -->
+    
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/index.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">CineMax</div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Início</a></li>
+                        
+                        <li><a href="#">Cinemas</a></li>
+                        <li><a href="/cinema/public/relatorios.html">Relatórios</a></li>
+                        <li><a href="login.html">Minha Conta</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner Principal - Slider -->
+    <section class="hero">
+        <div class="hero-slider">
+            <!-- Slide 1 -->
+            <div class="slide active" style="background-image: url('../images/duna.webp')">
+                <div class="slide-content">
+                    <h1>Duna: Parte Dois</h1>
+                    <p>A lenda continua na maior aventura do ano</p>
+                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="slide" style="background-image: url('../images/deadpool+e+wolverine+capa.webp')">
+                <div class="slide-content">
+                    <h1>Deadpool & Wolverine</h1>
+                    <p>O duo mais explosivo dos cinemas</p>
+                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                </div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="slide" style="background-image: url('../images/divertidamente.webp')">
+                <div class="slide-content">
+                    <h1>Divertidamente 2</h1>
+                    <p>Novas emoções estão chegando</p>
+                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                </div>
+            </div>
+            
+            <!-- Slide 4 -->
+            <div class="slide" style="background-image: url('../images/planeta-dos-macacos.webp')">
+                <div class="slide-content">
+                    <h1>O Reino do Planeta dos Macacos</h1>
+                    <p>Uma nova era começa</p>
+                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controles do Slider -->
+        <div class="slider-controls">
+            <button class="slider-btn prev-btn">‹</button>
+            <button class="slider-btn next-btn">›</button>
+        </div>
+        
+        <!-- Indicadores -->
+        <div class="slider-dots">
+            <span class="dot active" data-slide="0"></span>
+            <span class="dot" data-slide="1"></span>
+            <span class="dot" data-slide="2"></span>
+            <span class="dot" data-slide="3"></span>
+        </div>
+    </section>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <!-- Filmes em Alta -->
+        <section id="movies">
+            <h2 class="section-title">Filmes em Alta</h2>
+            <div class="movies-grid">
+                <p style="color: white;">Carregando filmes...</p> 
+            </div>
+        </section>
+
+        <!-- Filmes em Cartaz -->
+        <section class="movies-section">
+            <h2 class="section-title">Em Cartaz</h2>
+            
+            <div class="movies-slider-container">
+                <div class="movies-slider" id="moviesSlider">
+                    <p style="color: white;">Carregando...</p>
+                </div>
+            </div>
+            
+            <!-- Indicadores -->
+            <div class="slider-indicators" id="moviesIndicators">
+                <!-- Os indicadores serão gerados via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Promoções -->
+        <section class="promotions">
+            <h2 class="section-title" style="color: white; border-color: #e50914;">Promoções do Dia</h2>
+            <div class="promo-card">
+                <h3 class="promo-title">Meia-Entrada para Todos</h3>
+                <p>Todas as sessões de segunda a quinta com preço único de meia-entrada!</p>
+            </div>
+            <div class="promo-card">
+                <h3 class="promo-title">Combo Família</h3>
+                <p>Compre 4 ingressos e ganhe um combo de pipoca e refrigerante grande!</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sobre Nós</h3>
+                    <p>O CineMax é a maior rede de cinemas do país, oferecendo a melhor experiência em entretenimento.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <p>Email: contato@cinemax.com</p>
+                    <p>Telefone: (11) 1234-5678</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <p>Facebook | Instagram | Twitter</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineMax. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

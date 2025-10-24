@@ -1,0 +1,127 @@
+/* Estilo da página de relatórios */
+body {
+    background: #111; /* Fundo escuro */
+    color: #f5f5f5;
+}
+
+.report-title {
+    color: #e50914;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.date-picker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.date-picker-grid label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.date-input {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+}
+
+.btn-gerar {
+    padding: 12px;
+    background: #e50914;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.btn-gerar:hover {
+    background: #b8070f;
+}
+
+.btn-download {
+    padding: 12px 20px;
+    background: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-bottom: 30px;
+}
+.btn-download:hover {
+    background: #45a049;
+}
+
+.report-results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 25px;
+}
+
+.report-card {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.report-card h2 {
+    color: #e50914;
+    font-size: 18px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Estilo da tabela de resultados */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.report-table th, .report-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.report-table th {
+    background: #222;
+    color: #ccc;
+}
+
+.report-table td {
+    color: #f5f5f5;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .report-results-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .date-picker-grid {
+        grid-template-columns: 1fr;
+    }
+    .report-results-grid {
+        grid-template-columns: 1fr;
+    }
+}
