@@ -17,23 +17,60 @@ document.querySelectorAll('.movie-card').forEach(card => {
 async function loadMoviesFromBackend() {
     console.log('[INDEX] Tentando carregar filmes do backend...');
     
-    // Verificar se backend está disponível
     backendAvailable = await ApiService.isBackendAvailable();
     
     if (!backendAvailable) {
-        console.warn('[INDEX] Backend não disponível, usando dados locais');
+        console.warn('[INDEX] Backend não disponível. Nenhuma seção de filmes será carregada.');
         showBackendStatus(false);
+        // Limpa as seções caso o backend esteja offline
+        document.querySelector('#movies .movies-grid').innerHTML = '<p style="color: white;">Modo Offline. Não foi possível carregar filmes.</p>';
+        document.getElementById('moviesSlider').innerHTML = '<p style="color: white;">Modo Offline.</p>';
         return;
     }
     
     console.log('[INDEX] Backend disponível! Carregando filmes...');
     showBackendStatus(true);
     
-    // Carregar filmes em cartaz
-    await loadFilmesEmCartaz();
-    
-    // Carregar filmes em alta (todos os filmes)
-    await loadFilmesEmAlta();
+    let filmesEmAlta = [];
+    let todosOsFilmes = [];
+    let filmesParaSlider = [];
+
+    // 1. Busca os filmes que estão realmente em cartaz
+    const resultEmCartaz = await ApiService.getFilmesEmCartaz();
+    if (resultEmCartaz.success && resultEmCartaz.data) {
+        // Guarda os 4 primeiros para a seção "Em Alta"
+        filmesEmAlta = resultEmCartaz.data.slice(0, 4);
+        console.log('[INDEX] Filmes EM ALTA definidos:', filmesEmAlta.map(f => f.id));
+        // Renderiza a seção "Filmes em Alta"
+        updateFilmesEmAltaSection(filmesEmAlta);
+    } else {
+        console.error('[INDEX] Erro ao carregar filmes em alta:', resultEmCartaz.error);
+        document.querySelector('#movies .movies-grid').innerHTML = '<p style="color: red;">Erro ao carregar filmes em alta.</p>';
+    }
+
+    // 2. Busca TODOS os filmes
+    const resultTodos = await ApiService.getAllFilmes();
+    if (resultTodos.success && resultTodos.data) {
+        todosOsFilmes = resultTodos.data;
+        console.log('[INDEX] TODOS os filmes recebidos:', todosOsFilmes.length);
+
+        // 3. FILTRA a lista 'todosOsFilmes' para remover os que já estão em 'filmesEmAlta'
+        const idsEmAlta = filmesEmAlta.map(filme => filme.id); // Cria um array só com os IDs
+        
+        filmesParaSlider = todosOsFilmes.filter(filme => {
+            // Mantém o filme na lista APENAS SE o ID dele NÃO ESTIVER na lista idsEmAlta
+            return !idsEmAlta.includes(filme.id); 
+        });
+        
+        console.log(`[INDEX] Filmes para o SLIDER (após filtro): ${filmesParaSlider.length}`, filmesParaSlider.map(f=>f.id));
+
+        // 4. Renderiza o slider "Em Cartaz" com a lista filtrada
+        updateFilmesEmCartazSlider(filmesParaSlider);
+
+    } else {
+        console.error('[INDEX] Erro ao carregar todos os filmes para o slider:', resultTodos.error);
+        document.getElementById('moviesSlider').innerHTML = '<p style="color: red;">Erro ao carregar filmes para o slider.</p>';
+    }
 }
 
 /**
@@ -59,19 +96,20 @@ async function loadFilmesEmAlta() {
 /**
  * Atualizar seção "Filmes em Alta" com dados do backend
  */
-function updateFilmesEmAltaSection(filmes) {
+function updateFilmesEmAltaSection(filmes) { // Recebe os filmes como argumento
     const moviesGrid = document.querySelector('#movies .movies-grid');
     
     if (!moviesGrid) return;
+    moviesGrid.innerHTML = ''; // Limpa o grid
     
-    // Limpar grid atual
-    moviesGrid.innerHTML = '';
-    
-    // Adicionar filmes do backend
-    filmes.forEach(filme => {
-        const card = createMovieCard(filme);
-        moviesGrid.appendChild(card);
-    });
+    if (filmes && filmes.length > 0) {
+        filmes.forEach(filme => {
+            const card = createMovieCard(filme);
+            moviesGrid.appendChild(card);
+        });
+    } else {
+        moviesGrid.innerHTML = '<p style="color: white;">Nenhum filme em alta no momento.</p>';
+    }
 }
 
 /**
@@ -96,103 +134,39 @@ async function loadFilmesEmCartaz() {
 /**
  * Atualizar slider "Em Cartaz" com dados do backend
  */
-function updateFilmesEmCartazSlider(filmes) {
+function updateFilmesEmCartazSlider(filmes) { // Recebe os filmes FILTRADOS como argumento
     const slider = document.getElementById('moviesSlider');
     
     if (!slider) {
         console.error("[INDEX] Elemento do slider 'moviesSlider' não encontrado.");
         return;
     }
-    
-    // Limpar slider (removendo o <p>Carregando...</p>)
-    slider.innerHTML = '';
-    
-    // Adicionar filmes do backend
+    slider.innerHTML = ''; // Limpa o slider
+
     if (filmes && filmes.length > 0) {
         filmes.forEach(filme => {
             const slide = document.createElement('div');
             slide.className = 'movie-slide';
-            
-            const card = createMovieCard(filme); // Reutiliza a função que cria o card
+            const card = createMovieCard(filme);
             slide.appendChild(card);
-            
             slider.appendChild(slide);
         });
-    } else {
-        // Caso a API retorne uma lista vazia
-        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
-        // Limpa os indicadores se não houver filmes
-        const indicatorsContainer = document.getElementById('moviesIndicators');
-        if (indicatorsContainer) indicatorsContainer.innerHTML = '';
-        return; // Não precisa inicializar o slider se não houver filmes
-    }
-    
-    // --- INÍCIO DA CORREÇÃO IMPORTANTE ---
-    // Reinicializar e Atualizar o slider
-    if (window.moviesSliderInstance) {
-        const sliderInstance = window.moviesSliderInstance;
-        
-        if(!slider){
-            console.log(`[INDEX] Atualizando slider com ${filmes.length} filmes.`);
-            return;
-        }
-
-        slider.innerHTML = '';
-
-        if (filmes && filmes.length > 0) {
-            filmes.forEach(filme => {
-                const slide = document.createElement('div');
-                slide.className = 'movie-slide';
-                const card = createMovieCard(filme);
-                slide.appendChild(card);
-                slider.appendChild(slide);
-            });
         console.log(`[INDEX] ${filmes.length} slides adicionados ao HTML do slider.`);
 
-        // --- CORREÇÃO AQUI ---
-        // Chama o método reinitialize DEPOIS que os slides estão no HTML
+        // Reinicializa o slider com os novos slides
         if (window.moviesSliderInstance) {
              window.moviesSliderInstance.reinitialize(); 
         } else {
             console.warn("[INDEX] Instância do slider não encontrada para reinicializar.");
         }
-        // --- FIM DA CORREÇÃO ---
 
     } else {
-        // Caso a API retorne uma lista vazia
-        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
-        // Limpa os indicadores se não houver filmes
-        if (window.moviesSliderInstance && window.moviesSliderInstance.indicatorsContainer) {
-            window.moviesSliderInstance.indicatorsContainer.innerHTML = '';
+        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum outro filme disponível no momento.</p>';
+        // Limpa os indicadores (se ainda existirem) e desabilita botões se não houver filmes
+        if (window.moviesSliderInstance) {
+            window.moviesSliderInstance.reinitialize(); // Chama para limpar/desabilitar controles
         }
     }
-
-        
-
-        // 1. Atualiza a lista interna de slides DENTRO do objeto sliderInstance
-        sliderInstance.slides = slider.querySelectorAll('.movie-slide'); 
-        sliderInstance.totalSlides = sliderInstance.slides.length;
-        
-        // 2. Recalcula quantas páginas/posições existem
-        // É importante recalcular slidesPerView caso a janela tenha mudado de tamanho
-        sliderInstance.slidesPerView = sliderInstance.getSlidesPerView(); 
-        sliderInstance.maxPosition = Math.max(0, sliderInstance.totalSlides - sliderInstance.slidesPerView);
-        
-        // 3. Garante que a posição atual não seja inválida (ex: estava na pág 3 e agora só tem 2)
-        // Reinicia na primeira página para simplificar
-        sliderInstance.currentPosition = 0; 
-
-        // 4. Recria os indicadores (bolinhas) com base no novo número de slides e páginas
-        sliderInstance.createIndicators(); 
-        
-        // 5. Atualiza a posição visual do slider (translateX) e habilita/desabilita os botões
-        sliderInstance.updateSlider(); 
-        
-        console.log("[INDEX] Slider de 'Em Cartaz' atualizado.");
-    } else {
-        console.warn("[INDEX] Instância do slider (window.moviesSliderInstance) não encontrada para atualização.");
-    }
-    // --- FIM DA CORREÇÃO IMPORTANTE ---
 }
 
 /**
@@ -368,6 +342,13 @@ class MoviesSlider {
         this.prevBtn = document.getElementById('prevBtnMovies');
         this.nextBtn = document.getElementById('nextBtnMovies');
         this.indicatorsContainer = document.getElementById('moviesIndicators');
+        this.currentPosition = 0;
+        this.slidesPerView = this.getSlidesPerView();
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentTranslate = 0;
+        this.prevTranslate = 0;
+        this.animationID = 0; // Para otimização do 'touchmove'
         
         if (!this.slider) return;
         
@@ -391,6 +372,72 @@ class MoviesSlider {
         window.addEventListener('resize', () => this.handleResize());
         this.updateControls();
     }
+    dragStart(event) {
+        this.isDragging = true;
+        // Pega a posição inicial X (se for toque, pega o primeiro dedo)
+        this.startX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        // Guarda a posição atual do slider antes de começar a arrastar
+        this.prevTranslate = this.currentTranslate; 
+        // Cancela animações pendentes
+        cancelAnimationFrame(this.animationID);
+        // Remove a transição suave DURANTE o arraste
+        this.slider.style.transition = 'none'; 
+        // Muda o cursor (desktop)
+        this.slider.style.cursor = 'grabbing'; 
+        console.log(`[Slider] Drag Start at ${this.startX}`);
+    }
+
+    dragging(event) {
+        if (!this.isDragging) return;
+
+        // Pega a posição X atual
+        const currentX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        // Calcula o quanto o dedo/mouse moveu desde o início
+        const diffX = currentX - this.startX;
+        // Calcula a nova posição do slider
+        this.currentTranslate = this.prevTranslate + diffX;
+
+        // Otimização: Usa requestAnimationFrame para atualizar a posição
+        // Isso evita sobrecarregar o navegador durante o 'touchmove'/'mousemove'
+        this.animationID = requestAnimationFrame(() => {
+            this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
+        });
+        console.log(`[Slider] Dragging, diff: ${diffX}, newTranslate: ${this.currentTranslate}`);
+    }
+
+    dragEnd() {
+        if (!this.isDragging) return; // Evita execuções múltiplas (ex: mouseup + mouseleave)
+
+        this.isDragging = false;
+        cancelAnimationFrame(this.animationID); // Cancela a última animação pendente
+
+        // Adiciona a transição suave de volta para o 'snap'
+        this.slider.style.transition = 'transform 0.5s ease-in-out'; 
+        this.slider.style.cursor = 'grab'; // Volta o cursor (desktop)
+
+        const movedBy = this.currentTranslate - this.prevTranslate;
+        const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth + 20 : 270; // Largura + gap
+        const threshold = slideWidth / 4; // Quanto precisa arrastar para mudar de slide (ex: 1/4 da largura)
+
+        console.log(`[Slider] Drag End. Moved by: ${movedBy}, Threshold: ${threshold}`);
+
+        // Decide se deve ir para o próximo, anterior ou voltar
+        if (movedBy < -threshold && this.currentPosition < this.maxPosition) {
+            // Arrastou para a esquerda o suficiente -> vai para o próximo grupo
+            console.log("[Slider] Snap Next");
+            this.currentPosition = Math.min(this.maxPosition, this.currentPosition + this.slidesPerView);
+        } else if (movedBy > threshold && this.currentPosition > 0) {
+            // Arrastou para a direita o suficiente -> vai para o grupo anterior
+            console.log("[Slider] Snap Previous");
+            this.currentPosition = Math.max(0, this.currentPosition - this.slidesPerView);
+        } else {
+             console.log("[Slider] Snap Back");
+             // Não arrastou o suficiente, volta para a posição original do grupo atual
+        }
+
+        // Atualiza a posição final e controles/indicadores
+        this.updateSlider(); 
+    }
 
     reinitialize() {
         console.log("[Slider] Reinicializando...");
@@ -411,6 +458,15 @@ class MoviesSlider {
         
         this.slidesPerView = this.getSlidesPerView();
         this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
+        this.slider.addEventListener('touchstart', this.dragStart.bind(this));
+        this.slider.addEventListener('touchend', this.dragEnd.bind(this));
+        this.slider.addEventListener('touchmove', this.dragging.bind(this));
+
+        // Listeners para Mouse (Desktop) - Boa UX
+        this.slider.addEventListener('mousedown', this.dragStart.bind(this));
+        this.slider.addEventListener('mouseup', this.dragEnd.bind(this));
+        this.slider.addEventListener('mouseleave', this.dragEnd.bind(this)); // Cancela se o mouse sair
+        this.slider.addEventListener('mousemove', this.dragging.bind(this));
         
         // Sempre volta para o início ao recarregar
         this.currentPosition = 0; 
@@ -443,24 +499,68 @@ class MoviesSlider {
     }
     
     updateSlider() {
-        if (!this.slides.length) return;
-        
-        const slideWidth = this.slides[0].offsetWidth + 20;
-        this.slider.style.transform = `translateX(-${this.currentPosition * slideWidth}px)`;
+        if (!this.slides || this.slides.length === 0) return;
+
+        const slideWidth = this.slides[0].offsetWidth + 20; // Largura + gap
+        // Calcula a posição final baseada no currentPosition (índice do slide inicial do grupo)
+        this.currentTranslate = -this.currentPosition * slideWidth; 
+
+        // Aplica a transformação FINAL (com transição)
+        this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
+
+        console.log(`[Slider] Updating visual to position index ${this.currentPosition}, translate ${this.currentTranslate}px`);
         this.updateIndicators();
-        this.updateControls();
-        console.log(`[Slider] Atualizando para posição ${this.currentPosition}, max ${this.maxPosition}`);
+     
+        this.updateControls(); 
     }
     
     updateIndicators() {
-        if (!this.indicatorsContainer) return;
+        // Sai se o container de indicadores não existir ou se não houver slides
+        if (!this.indicatorsContainer || !this.slides || this.slides.length === 0) {
+            console.log("[Slider Indicators] Abortando: Container ou slides não encontrados.");
+            if(this.indicatorsContainer) this.indicatorsContainer.innerHTML = ''; 
+            return;
+        } 
         
-        const currentPage = Math.floor(this.currentPosition / this.slidesPerView);
         const indicators = this.indicatorsContainer.querySelectorAll('.indicator');
-        
+        if (!indicators || indicators.length === 0) {
+            console.log("[Slider Indicators] Abortando: Indicadores não encontrados no container.");
+            return;
+        }
+
+        // --- Cálculo da Página Atual ---
+        const totalPages = Math.ceil(this.totalSlides / this.slidesPerView);
+        let currentPage = Math.round(this.currentPosition / this.slidesPerView);
+        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1)); 
+
+        console.log(`[Slider Indicators] Update Start. CurrentPos: ${this.currentPosition}, SlidesPerView: ${this.slidesPerView}, TotalPages: ${totalPages}, CalculatedPage: ${currentPage}`);
+
+        let foundActive = false;
+        // --- Lógica Explícita de Remoção/Adição ---
         indicators.forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === currentPage);
+            // Remove 'active' de todos, exceto o que deveria estar ativo
+            if (indicator.classList.contains('active') && index !== currentPage) {
+                indicator.classList.remove('active');
+                // console.log(`[Slider Indicators] Removed active from indicator ${index}`); // Log Opcional
+            }
+            // Adiciona 'active' ao correto, se ele já não tiver
+            if (index === currentPage && !indicator.classList.contains('active')) {
+                indicator.classList.add('active');
+                foundActive = true;
+                // console.log(`[Slider Indicators] Added active to indicator ${index}`); // Log Opcional
+            } else if (index === currentPage) {
+                foundActive = true;
+            }
         });
+
+        // Fallback: Se, após o loop, o indicador correto não foi ativado, força a ativação
+        if (!foundActive && indicators[currentPage]) {
+             console.warn(`[Slider Indicators] Fallback: Forcing activation for indicator ${currentPage}`);
+             indicators.forEach(ind => ind.classList.remove('active'));
+             indicators[currentPage].classList.add('active');
+        } else if (!indicators[currentPage]){
+             console.error(`[Slider Indicators] Error: Calculated page ${currentPage} is out of bounds (0-${indicators.length - 1})`);
+        }
     }
     
     updateControls() {
@@ -513,6 +613,8 @@ class MoviesSlider {
         }
         
         this.updateSlider();
+        this.createIndicators(); 
+        
     }
 }
 

@@ -483,62 +483,7 @@ nav ul li a.active {
     z-index: 1000;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .movie-hero-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .poster-image {
-        width: 250px;
-        height: 375px;
-    }
-    
-    .movie-title {
-        font-size: 36px;
-    }
-    
-    .movie-meta {
-        justify-content: center;
-    }
-    
-    .movie-actions {
-        justify-content: center;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-    }
-    
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-    }
-}
 
-@media (max-width: 480px) {
-    .container {
-        padding: 0 15px;
-    }
-    
-    .movie-title {
-        font-size: 28px;
-    }
-    
-    .poster-image {
-        width: 200px;
-        height: 300px;
-    }
-    
-    .type-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-}
 
 /* =================================== */
 /* ESTILOS DO MODAL DE ASSENTOS     */
@@ -746,32 +691,7 @@ nav ul li a.active {
     background: #b8070f;
 }
 
-/* --- Media Queries para telas muito pequenas --- */
 
-@media (max-width: 640px) {
-    .modal-content {
-        padding: 15px; /* Menos padding lateral */
-    }
-    .seat-selection-container {
-        padding: 15px; /* Menos padding interno */
-    }
-    .seat-grid {
-        gap: 5px; /* Assentos mais próximos */
-        max-width: 100%; /* Ocupa toda a largura */
-    }
-    .seat {
-        font-size: 8px; /* Texto menor nos assentos */
-    }
-}
-
-@media (max-width: 360px) {
-    .seat {
-        font-size: 7px; /* Texto ainda menor */
-    }
-    .seat-legend {
-        gap: 10px; /* Menos espaço na legenda */
-    }
-}
 
 /* =================================== */
 /* ESTILOS DOS MODAIS DE ALERTA E CPF */
@@ -819,4 +739,201 @@ nav ul li a.active {
 .alert-content .modal-close {
     top: 10px;
     right: 15px;
+}
+
+/* --- Media Queries para telas muito pequenas --- */
+
+@/* =================================== */
+/* RESPONSIVE DESIGN RULES       */
+/* =================================== */
+
+/* Tablets and larger phones (up to 768px wide) */
+@media (max-width: 768px) {
+    /* --- General Page Adjustments --- */
+    .movie-hero-content {
+        flex-direction: column;
+        align-items: center; /* Center items when stacked */
+        text-align: center;
+    }
+    
+    .poster-image { /* Poster on movie detail page */
+        width: 250px; /* Slightly smaller */
+        height: auto; /* Maintain aspect ratio */
+        margin-bottom: 20px; /* Add space below */
+    }
+    
+    .movie-title { /* Movie title on detail page */
+        font-size: 36px;
+    }
+    
+    .movie-meta { /* Metadata (duration, genre) */
+        justify-content: center;
+    }
+    
+    .movie-actions { /* Buttons (remember, share) */
+        justify-content: center;
+    }
+    
+    .section-header { /* Header for Sessions section */
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+     .trailer-section .video-wrapper iframe,
+     .trailer-section .video-wrapper .video-placeholder {
+         height: 350px; /* Make trailer video shorter */
+     }
+    
+    .footer-content { /* Footer layout */
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* --- Seat Modal Adjustments --- */
+    .modal-content {
+        padding: 20px 25px; 
+    }
+    .seat-selection-container {
+        padding: 15px;
+    }
+     .seat-grid {
+        gap: 6px; 
+        max-width: 100%; /* Allow grid to shrink */
+    }
+    .seat {
+        font-size: 9px; 
+        border-radius: 3px;
+    }
+     .screen-legend {
+        width: 90%;
+        padding: 8px;
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+     .seat-legend {
+        gap: 15px;
+        margin-top: 20px;
+    }
+     .legend-item {
+        font-size: 12px;
+    }
+     .seat-icon {
+        width: 18px;
+        height: 18px;
+    }
+     .booking-summary p {
+        font-size: 14px;
+    }
+     .btn-confirm-booking {
+         font-size: 15px;
+         padding: 11px;
+     }
+}
+
+/* Smaller phones (up to 480px wide) */
+@media (max-width: 480px) {
+    /* --- General Page Adjustments --- */
+    .container { /* Reduce side padding */
+        padding: 0 15px;
+    }
+    
+    .movie-title { /* Movie title on detail page */
+        font-size: 28px;
+    }
+    
+    .poster-image { /* Poster on movie detail page */
+        width: 200px; /* Even smaller */
+    }
+    
+    .type-header { /* Session type header (2D, Dublado) */
+        flex-direction: column;
+        gap: 5px; /* Less gap */
+        align-items: flex-start;
+    }
+     .date-option { /* Date selector buttons */
+         padding: 12px 15px;
+         min-width: 70px;
+     }
+      .trailer-section .video-wrapper iframe,
+     .trailer-section .video-wrapper .video-placeholder {
+         height: 250px; /* Make trailer even shorter */
+     }
+
+    /* --- Seat Modal Adjustments --- */
+     .modal-content {
+        padding: 15px; 
+        max-height: 90vh; /* Ensure it fits vertically */
+    }
+     .modal-content h2 {
+         font-size: 18px;
+         margin-bottom: 15px;
+     }
+    .seat-selection-container {
+        padding: 10px;
+    }
+    .seat-grid {
+        gap: 4px; /* Assentos bem próximos */
+    }
+    .seat {
+        font-size: 7px; /* Texto minúsculo */
+        border-radius: 2px;
+    }
+    .screen-legend {
+        padding: 6px;
+        font-size: 11px;
+        margin-bottom: 15px;
+    }
+     .seat-legend {
+        gap: 10px; 
+        margin-top: 15px;
+    }
+    .legend-item {
+        font-size: 10px; 
+    }
+    .seat-icon {
+        width: 14px; 
+        height: 14px;
+    }
+     .booking-summary {
+         margin-top: 15px;
+         padding-top: 10px;
+     }
+    .booking-summary p {
+        font-size: 12px; 
+        margin: 6px 0;
+    }
+    .btn-confirm-booking {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Very narrow phones (up to 360px wide) */
+@media (max-width: 360px) {
+     .movie-title { /* Movie title on detail page */
+        font-size: 24px;
+    }
+    .poster-image { /* Poster on movie detail page */
+        width: 180px; 
+    }
+     .seat {
+        font-size: 6px; /* Praticamente sem texto */
+     }
+     .seat-grid {
+         gap: 3px; /* Quase colados */
+     }
+     .legend-item {
+         font-size: 9px;
+     }
+      .seat-icon {
+        width: 12px; 
+        height: 12px;
+    }
+      .booking-summary p {
+        font-size: 11px; 
+    }
+       .btn-confirm-booking {
+        font-size: 13px;
+    }
 }

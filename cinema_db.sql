@@ -113,6 +113,44 @@ INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, pre
 
 ('oppenheimer', 3, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '14:30:00', 'IMAX LEGENDADO', 45.00, 80);
 
+-- O Dublê (the-fall-guy) - Adicionando sessões
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('the-fall-guy', 4, CURDATE(), '17:00:00', 'VIP DUBLADO', 50.00, 50),
+('the-fall-guy', 5, CURDATE(), '19:00:00', '2D LEGENDADO', 24.00, 100),
+('the-fall-guy', 4, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '17:30:00', 'VIP DUBLADO', 50.00, 50),
+('the-fall-guy', 5, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '19:30:00', '2D LEGENDADO', 24.00, 100); -- Dia +2
+
+-- Furiosa (furiosa) - Adicionando sessões
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('furiosa', 3, CURDATE(), '21:00:00', 'IMAX LEGENDADO', 45.00, 80),
+('furiosa', 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '18:00:00', '2D DUBLADO', 27.00, 100), -- Dia +2
+('furiosa', 3, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '20:30:00', 'IMAX LEGENDADO', 45.00, 80); -- Dia +3
+
+-- Godzilla x Kong (godzilla-x-kong) - Adicionando sessões
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('godzilla-x-kong', 2, CURDATE(), '14:30:00', '3D DUBLADO', 35.00, 120),
+('godzilla-x-kong', 5, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '18:00:00', '2D DUBLADO', 25.00, 100),
+('godzilla-x-kong', 2, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '15:00:00', '3D DUBLADO', 35.00, 120); -- Dia +3
+
+-- O Reino do Planeta dos Macacos (kingdom-of-the-planet-of-the-apes) - Adicionando sessões
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('kingdom-of-the-planet-of-the-apes', 1, CURDATE(), '18:30:00', '2D LEGENDADO', 25.00, 100),
+('kingdom-of-the-planet-of-the-apes', 4, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '19:00:00', 'VIP DUBLADO', 50.00, 50), -- Dia +2
+('kingdom-of-the-planet-of-the-apes', 1, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '17:00:00', '2D DUBLADO', 25.00, 100); -- Dia +4
+
+-- Barbie (barbie) - Adicionando sessões
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('barbie', 5, CURDATE(), '14:00:00', '2D DUBLADO', 22.00, 100),
+('barbie', 4, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '15:00:00', 'VIP DUBLADO', 50.00, 50),
+('barbie', 5, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '16:30:00', '2D DUBLADO', 22.00, 100); -- Dia +3
+
+-- Adicionando mais sessões para DIAS FUTUROS (Exemplos)
+INSERT INTO sessoes (filme_id, sala_id, data_sessao, horario, tipo_exibicao, preco, assentos_disponiveis) VALUES
+('duna-2', 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '14:00:00', '2D DUBLADO', 25.00, 100), -- Dia +2
+('deadpool-3', 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '18:00:00', '3D DUBLADO', 38.00, 120), -- Dia +2
+('bad-boys-4', 1, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '19:00:00', '2D LEGENDADO', 26.00, 100), -- Dia +3
+('inside-out-2', 5, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '14:00:00', '2D DUBLADO', 22.00, 100); -- Dia +4
+
 -- ================================================
 -- 6. CRIAR ASSENTOS PARA TODAS AS SESSÕES
 -- ================================================

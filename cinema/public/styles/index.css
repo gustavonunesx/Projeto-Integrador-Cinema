@@ -229,6 +229,7 @@ nav ul li a:hover {
 }
 
 .movie-card {
+    width: 100%;
     background-color: #24242A;
     border-radius: 8px;
     overflow: hidden;
@@ -242,7 +243,7 @@ nav ul li a:hover {
 
 .movie-poster {
     width: 100%;
-    height: 300px;
+    height: 320px;
     object-fit: cover;
 }
 
@@ -352,12 +353,14 @@ nav ul li a:hover {
 @media (max-width: 1200px) {
     .movie-slide {
         flex: 0 0 calc(33.333% - 13.33px);
+        min-width: 220px
     }
 }
 
 @media (max-width: 768px) {
     .movie-slide {
-        flex: 0 0 calc(50% - 10px);
+        flex: 0 0 calc(60% - 12px);
+        min-width: 200px;
     }
     
     .slider-btn-movies {
@@ -369,7 +372,22 @@ nav ul li a:hover {
 
 @media (max-width: 480px) {
     .movie-slide {
-        flex: 0 0 100%;
+        flex: 0 0 calc(100% - 10px);
+        min-width: 180px;
+    }
+
+    .movie-poster {
+        height: 320px; 
+    }
+
+    #movies .movies-grid .movie-poster {
+        height: 410px;
+    }
+
+    .movies-section .movies-slider .movie-poster {
+         height: 410px; 
+         
+         
     }
 }
 
@@ -676,4 +694,21 @@ footer {
     .seats-grid {
         grid-template-columns: repeat(8, 1fr);
     }
+}
+
+.movies-slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    gap: 20px;
+    cursor: grab; /* <-- ADICIONE: Mãozinha para indicar que é arrastável */
+    user-select: none; /* <-- ADICIONE: Impede seleção de texto ao arrastar */
+}
+
+.movies-slider.dragging { /* Classe pode ser adicionada/removida no JS se quiser, mas cursor: grabbing é mais simples */
+    cursor: grabbing; /* <-- ADICIONE: Mãozinha fechada durante o arraste */
+}
+
+/* Impede o navegador de tentar arrastar as imagens individualmente */
+.movies-slider img {
+    pointer-events: none;
 }

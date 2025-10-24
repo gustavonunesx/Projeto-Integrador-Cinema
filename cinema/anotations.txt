@@ -1,0 +1,1 @@
+importante: Lembre-se que CURDATE() pega a data atual do servidor MySQL. As sessões serão criadas para hoje (CURDATE()) e para os próximos 1, 2, 3 e 4 dias a partir de hoje (DATE_ADD(CURDATE(), INTERVAL X DAY)).
