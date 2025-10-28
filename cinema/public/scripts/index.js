@@ -254,18 +254,20 @@ function showBackendStatus(isOnline) {
 }
 
 /**
- * SLIDERS (mantém funcionalidade original)
+ * SLIDERS COM SWIPE PARA MOBILE
  */
 
-// Slider Hero
+// Slider Hero com Swipe
 class HeroSlider {
     constructor() {
-        this.slides = document.querySelectorAll('.slide');
-        this.dots = document.querySelectorAll('.dot');
+        this.slides = document.querySelectorAll('.hero-slider .slide');
+        this.dots = document.querySelectorAll('.slider-dots .dot');
         this.prevBtn = document.querySelector('.prev-btn');
         this.nextBtn = document.querySelector('.next-btn');
         this.currentSlide = 0;
-        this.slideInterval = null;
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentX = 0;
         
         this.init();
     }
@@ -273,69 +275,121 @@ class HeroSlider {
     init() {
         if (!this.slides.length) return;
         
-        this.prevBtn.addEventListener('click', () => this.prevSlide());
-        this.nextBtn.addEventListener('click', () => this.nextSlide());
+        // Event listeners para botões
+        if (this.prevBtn && this.nextBtn) {
+            this.prevBtn.addEventListener('click', () => this.prevSlide());
+            this.nextBtn.addEventListener('click', () => this.nextSlide());
+        }
         
-        this.dots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                const slideIndex = parseInt(e.target.getAttribute('data-slide'));
-                this.goToSlide(slideIndex);
-            });
+        // Event listeners para dots
+        this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToSlide(index));
         });
         
-        this.startAutoSlide();
+        // Event listeners para swipe
+        this.addSwipeSupport();
         
-        const hero = document.querySelector('.hero');
-        hero.addEventListener('mouseenter', () => this.stopAutoSlide());
-        hero.addEventListener('mouseleave', () => this.startAutoSlide());
+        // Auto-play
+        this.startAutoPlay();
+        
+        // Esconder setas em mobile
+        this.handleResponsive();
+        window.addEventListener('resize', () => this.handleResponsive());
     }
     
-    showSlide(index) {
-        this.slides.forEach(slide => slide.classList.remove('active'));
-        this.dots.forEach(dot => dot.classList.remove('active'));
+    addSwipeSupport() {
+        const slider = document.querySelector('.hero-slider');
         
-        this.slides[index].classList.add('active');
-        this.dots[index].classList.add('active');
+        // Eventos de mouse/touch
+        slider.addEventListener('mousedown', this.startDrag.bind(this));
+        slider.addEventListener('touchstart', this.startDrag.bind(this));
         
-        this.currentSlide = index;
+        slider.addEventListener('mousemove', this.drag.bind(this));
+        slider.addEventListener('touchmove', this.drag.bind(this));
+        
+        slider.addEventListener('mouseup', this.endDrag.bind(this));
+        slider.addEventListener('touchend', this.endDrag.bind(this));
+        slider.addEventListener('mouseleave', this.endDrag.bind(this));
+    }
+    
+    startDrag(e) {
+        this.isDragging = true;
+        this.startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+        this.currentX = this.startX;
+    }
+    
+    drag(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        this.currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    }
+    
+    endDrag(e) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        const diff = this.startX - this.currentX;
+        const minSwipeDistance = 50; // Distância mínima para considerar swipe
+        
+        if (Math.abs(diff) > minSwipeDistance) {
+            if (diff > 0) {
+                this.nextSlide(); // Swipe para esquerda
+            } else {
+                this.prevSlide(); // Swipe para direita
+            }
+        }
     }
     
     nextSlide() {
-        let nextIndex = this.currentSlide + 1;
-        if (nextIndex >= this.slides.length) {
-            nextIndex = 0;
-        }
-        this.showSlide(nextIndex);
+        this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+        this.updateSlider();
     }
     
     prevSlide() {
-        let prevIndex = this.currentSlide - 1;
-        if (prevIndex < 0) {
-            prevIndex = this.slides.length - 1;
-        }
-        this.showSlide(prevIndex);
+        this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+        this.updateSlider();
     }
     
     goToSlide(index) {
-        if (index >= 0 && index < this.slides.length) {
-            this.showSlide(index);
-        }
+        this.currentSlide = index;
+        this.updateSlider();
     }
     
-    startAutoSlide() {
-        this.slideInterval = setInterval(() => {
+    updateSlider() {
+        // Atualizar slides
+        this.slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === this.currentSlide);
+        });
+        
+        // Atualizar dots
+        this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentSlide);
+        });
+    }
+    
+    startAutoPlay() {
+        // Auto-play a cada 5 segundos
+        setInterval(() => {
             this.nextSlide();
         }, 5000);
     }
     
-    stopAutoSlide() {
-        if (this.slideInterval) {
-            clearInterval(this.slideInterval);
+    handleResponsive() {
+        const isMobile = window.innerWidth <= 768;
+        const sliderControls = document.querySelector('.slider-controls');
+        
+        if (sliderControls) {
+            if (isMobile) {
+                sliderControls.style.display = 'none';
+            } else {
+                sliderControls.style.display = 'flex';
+            }
         }
     }
 }
 
-// Slider para Filmes em Cartaz
+// Slider para Filmes em Cartaz com Swipe
 class MoviesSlider {
     constructor() {
         this.slider = document.getElementById('moviesSlider');
@@ -348,7 +402,7 @@ class MoviesSlider {
         this.startX = 0;
         this.currentTranslate = 0;
         this.prevTranslate = 0;
-        this.animationID = 0; // Para otimização do 'touchmove'
+        this.animationID = 0;
         
         if (!this.slider) return;
         
@@ -369,74 +423,64 @@ class MoviesSlider {
         }
         
         this.createIndicators();
+        this.addSwipeSupport();
         window.addEventListener('resize', () => this.handleResize());
         this.updateControls();
     }
+    
+    addSwipeSupport() {
+        // Touch events para mobile
+        this.slider.addEventListener('touchstart', this.dragStart.bind(this));
+        this.slider.addEventListener('touchend', this.dragEnd.bind(this));
+        this.slider.addEventListener('touchmove', this.dragging.bind(this));
+
+        // Mouse events para desktop
+        this.slider.addEventListener('mousedown', this.dragStart.bind(this));
+        this.slider.addEventListener('mouseup', this.dragEnd.bind(this));
+        this.slider.addEventListener('mouseleave', this.dragEnd.bind(this));
+        this.slider.addEventListener('mousemove', this.dragging.bind(this));
+    }
+    
     dragStart(event) {
         this.isDragging = true;
-        // Pega a posição inicial X (se for toque, pega o primeiro dedo)
         this.startX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
-        // Guarda a posição atual do slider antes de começar a arrastar
-        this.prevTranslate = this.currentTranslate; 
-        // Cancela animações pendentes
+        this.prevTranslate = this.currentTranslate;
         cancelAnimationFrame(this.animationID);
-        // Remove a transição suave DURANTE o arraste
-        this.slider.style.transition = 'none'; 
-        // Muda o cursor (desktop)
-        this.slider.style.cursor = 'grabbing'; 
-        console.log(`[Slider] Drag Start at ${this.startX}`);
+        this.slider.style.transition = 'none';
+        this.slider.style.cursor = 'grabbing';
     }
 
     dragging(event) {
         if (!this.isDragging) return;
 
-        // Pega a posição X atual
         const currentX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
-        // Calcula o quanto o dedo/mouse moveu desde o início
         const diffX = currentX - this.startX;
-        // Calcula a nova posição do slider
         this.currentTranslate = this.prevTranslate + diffX;
 
-        // Otimização: Usa requestAnimationFrame para atualizar a posição
-        // Isso evita sobrecarregar o navegador durante o 'touchmove'/'mousemove'
         this.animationID = requestAnimationFrame(() => {
             this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
         });
-        console.log(`[Slider] Dragging, diff: ${diffX}, newTranslate: ${this.currentTranslate}`);
     }
 
     dragEnd() {
-        if (!this.isDragging) return; // Evita execuções múltiplas (ex: mouseup + mouseleave)
+        if (!this.isDragging) return;
 
         this.isDragging = false;
-        cancelAnimationFrame(this.animationID); // Cancela a última animação pendente
-
-        // Adiciona a transição suave de volta para o 'snap'
-        this.slider.style.transition = 'transform 0.5s ease-in-out'; 
-        this.slider.style.cursor = 'grab'; // Volta o cursor (desktop)
+        cancelAnimationFrame(this.animationID);
+        this.slider.style.transition = 'transform 0.5s ease-in-out';
+        this.slider.style.cursor = 'grab';
 
         const movedBy = this.currentTranslate - this.prevTranslate;
-        const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth + 20 : 270; // Largura + gap
-        const threshold = slideWidth / 4; // Quanto precisa arrastar para mudar de slide (ex: 1/4 da largura)
+        const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth + 20 : 270;
+        const threshold = slideWidth / 4;
 
-        console.log(`[Slider] Drag End. Moved by: ${movedBy}, Threshold: ${threshold}`);
-
-        // Decide se deve ir para o próximo, anterior ou voltar
         if (movedBy < -threshold && this.currentPosition < this.maxPosition) {
-            // Arrastou para a esquerda o suficiente -> vai para o próximo grupo
-            console.log("[Slider] Snap Next");
             this.currentPosition = Math.min(this.maxPosition, this.currentPosition + this.slidesPerView);
         } else if (movedBy > threshold && this.currentPosition > 0) {
-            // Arrastou para a direita o suficiente -> vai para o grupo anterior
-            console.log("[Slider] Snap Previous");
             this.currentPosition = Math.max(0, this.currentPosition - this.slidesPerView);
-        } else {
-             console.log("[Slider] Snap Back");
-             // Não arrastou o suficiente, volta para a posição original do grupo atual
         }
 
-        // Atualiza a posição final e controles/indicadores
-        this.updateSlider(); 
+        this.updateSlider();
     }
 
     reinitialize() {
@@ -446,33 +490,20 @@ class MoviesSlider {
         
         if (this.totalSlides === 0) {
             console.warn("[Slider] Nenhum slide encontrado para inicializar.");
-             // Limpa indicadores se não houver slides
             if (this.indicatorsContainer) this.indicatorsContainer.innerHTML = '';
-             // Desabilita botões
             if (this.prevBtn) this.prevBtn.disabled = true;
             if (this.nextBtn) this.nextBtn.disabled = true;
-            return; 
+            return;
         }
 
         console.log(`[Slider] Encontrados ${this.totalSlides} slides.`);
         
         this.slidesPerView = this.getSlidesPerView();
         this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
-        this.slider.addEventListener('touchstart', this.dragStart.bind(this));
-        this.slider.addEventListener('touchend', this.dragEnd.bind(this));
-        this.slider.addEventListener('touchmove', this.dragging.bind(this));
-
-        // Listeners para Mouse (Desktop) - Boa UX
-        this.slider.addEventListener('mousedown', this.dragStart.bind(this));
-        this.slider.addEventListener('mouseup', this.dragEnd.bind(this));
-        this.slider.addEventListener('mouseleave', this.dragEnd.bind(this)); // Cancela se o mouse sair
-        this.slider.addEventListener('mousemove', this.dragging.bind(this));
         
-        // Sempre volta para o início ao recarregar
-        this.currentPosition = 0; 
-
-        this.createIndicators(); // Recria as bolinhas
-        this.updateSlider();     // Atualiza a posição visual e os botões
+        this.currentPosition = 0;
+        this.createIndicators();
+        this.updateSlider();
         console.log("[Slider] Reinicialização completa.");
     }
     
@@ -501,66 +532,30 @@ class MoviesSlider {
     updateSlider() {
         if (!this.slides || this.slides.length === 0) return;
 
-        const slideWidth = this.slides[0].offsetWidth + 20; // Largura + gap
-        // Calcula a posição final baseada no currentPosition (índice do slide inicial do grupo)
-        this.currentTranslate = -this.currentPosition * slideWidth; 
+        const slideWidth = this.slides[0].offsetWidth + 20;
+        this.currentTranslate = -this.currentPosition * slideWidth;
 
-        // Aplica a transformação FINAL (com transição)
         this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
-
-        console.log(`[Slider] Updating visual to position index ${this.currentPosition}, translate ${this.currentTranslate}px`);
         this.updateIndicators();
-     
-        this.updateControls(); 
+        this.updateControls();
     }
     
     updateIndicators() {
-        // Sai se o container de indicadores não existir ou se não houver slides
         if (!this.indicatorsContainer || !this.slides || this.slides.length === 0) {
-            console.log("[Slider Indicators] Abortando: Container ou slides não encontrados.");
-            if(this.indicatorsContainer) this.indicatorsContainer.innerHTML = ''; 
+            if(this.indicatorsContainer) this.indicatorsContainer.innerHTML = '';
             return;
-        } 
+        }
         
         const indicators = this.indicatorsContainer.querySelectorAll('.indicator');
-        if (!indicators || indicators.length === 0) {
-            console.log("[Slider Indicators] Abortando: Indicadores não encontrados no container.");
-            return;
-        }
+        if (!indicators || indicators.length === 0) return;
 
-        // --- Cálculo da Página Atual ---
         const totalPages = Math.ceil(this.totalSlides / this.slidesPerView);
         let currentPage = Math.round(this.currentPosition / this.slidesPerView);
-        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1)); 
+        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1));
 
-        console.log(`[Slider Indicators] Update Start. CurrentPos: ${this.currentPosition}, SlidesPerView: ${this.slidesPerView}, TotalPages: ${totalPages}, CalculatedPage: ${currentPage}`);
-
-        let foundActive = false;
-        // --- Lógica Explícita de Remoção/Adição ---
         indicators.forEach((indicator, index) => {
-            // Remove 'active' de todos, exceto o que deveria estar ativo
-            if (indicator.classList.contains('active') && index !== currentPage) {
-                indicator.classList.remove('active');
-                // console.log(`[Slider Indicators] Removed active from indicator ${index}`); // Log Opcional
-            }
-            // Adiciona 'active' ao correto, se ele já não tiver
-            if (index === currentPage && !indicator.classList.contains('active')) {
-                indicator.classList.add('active');
-                foundActive = true;
-                // console.log(`[Slider Indicators] Added active to indicator ${index}`); // Log Opcional
-            } else if (index === currentPage) {
-                foundActive = true;
-            }
+            indicator.classList.toggle('active', index === currentPage);
         });
-
-        // Fallback: Se, após o loop, o indicador correto não foi ativado, força a ativação
-        if (!foundActive && indicators[currentPage]) {
-             console.warn(`[Slider Indicators] Fallback: Forcing activation for indicator ${currentPage}`);
-             indicators.forEach(ind => ind.classList.remove('active'));
-             indicators[currentPage].classList.add('active');
-        } else if (!indicators[currentPage]){
-             console.error(`[Slider Indicators] Error: Calculated page ${currentPage} is out of bounds (0-${indicators.length - 1})`);
-        }
     }
     
     updateControls() {
@@ -613,8 +608,6 @@ class MoviesSlider {
         }
         
         this.updateSlider();
-        this.createIndicators(); 
-        
     }
 }
 
@@ -626,9 +619,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Inicializar sliders
     new HeroSlider();
-    window.moviesSliderInstance = new MoviesSlider(); 
-  
-    window.moviesSliderInstance.reinitialize(); // Faz a inicialização completa
+    window.moviesSliderInstance = new MoviesSlider();
+    window.moviesSliderInstance.reinitialize();
     
     // Carregar filmes do backend
     await loadMoviesFromBackend();
