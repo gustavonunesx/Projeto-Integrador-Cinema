@@ -721,4 +721,36 @@ Total: ${document.getElementById('summary-total').textContent}`, "Reserva Confir
     const selectedDate = document.querySelector('.date-option.active').dataset.fullDate;
     await loadSessoes(currentMovie.id, selectedDate);
 }
+
+// Controle do menu mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    menuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        mainMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = mainMenu.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    menuOverlay.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        mainMenu.classList.remove('active');
+        this.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    
+    // Fechar menu ao clicar em um link
+    const menuLinks = mainMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            mainMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+});
 document.addEventListener('DOMContentLoaded', loadMovieData);
