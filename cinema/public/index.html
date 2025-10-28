@@ -17,15 +17,26 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
                 <nav>
-                    <ul>
+                    <ul id="mainMenu">
                         <li><a href="#" class="active">Início</a></li>
-                        
                         <li><a href="#">Cinemas</a></li>
                         <li><a href="/cinema/public/relatorios.html">Relatórios</a></li>
                         <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
             </div>
         </div>
     </header>

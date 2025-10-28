@@ -633,3 +633,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Carregar filmes do backend
     await loadMoviesFromBackend();
 });
+
+// Controle do menu mobile para index.html
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    if (menuToggle && mainMenu && menuOverlay) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            mainMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mainMenu.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        menuOverlay.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            mainMenu.classList.remove('active');
+            this.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // Fechar menu ao clicar em um link
+        const menuLinks = mainMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuToggle.classList.remove('active');
+                mainMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+});
