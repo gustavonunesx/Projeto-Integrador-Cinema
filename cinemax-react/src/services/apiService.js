@@ -1,7 +1,7 @@
-// api-service.js - Camada de comunicação com o backend
+// Baseado no seu arquivo api-service.js original
 const API_CONFIG = {
     BASE_URL: 'http://localhost:8080/api',
-    TIMEOUT: 5000, // 5 segundos
+    TIMEOUT: 5000,
     HEADERS: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -12,7 +12,7 @@ const API_CONFIG = {
  * Serviço central para comunicação com a API
  * Todos os métodos retornam { success: boolean, data: any, error: string }
  */
-const ApiService = {
+export const ApiService = {
     /**
      * Método genérico para fazer requisições HTTP
      */
@@ -112,29 +112,6 @@ const ApiService = {
     },
 
     /**
-     * ANALYTICS
-     */
-    
-    // Dashboard completo
-    async getDashboard() {
-        return await this.request('/analytics/dashboard');
-    },
-
-    // Filmes mais populares em um período
-    async getFilmesPopulares(dataInicio, dataFim) {
-        return await this.request(
-            `/analytics/filmes-populares?inicio=${dataInicio}&fim=${dataFim}`
-        );
-    },
-
-    // Horários mais movimentados
-    async getHorariosMovimentados(dataInicio, dataFim) {
-        return await this.request(
-            `/analytics/horarios-movimento?inicio=${dataInicio}&fim=${dataFim}`
-        );
-    },
-
-    /**
      * UTILIDADES
      */
     
@@ -172,5 +149,3 @@ const ApiService = {
         return time;
     }
 };
-
-export default ApiService;
