@@ -721,4 +721,158 @@ Total: ${document.getElementById('summary-total').textContent}`, "Reserva Confir
     const selectedDate = document.querySelector('.date-option.active').dataset.fullDate;
     await loadSessoes(currentMovie.id, selectedDate);
 }
+
+// Controle do menu mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    menuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        mainMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = mainMenu.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    menuOverlay.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        mainMenu.classList.remove('active');
+        this.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    
+    // Fechar menu ao clicar em um link
+    const menuLinks = mainMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            mainMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+});
 document.addEventListener('DOMContentLoaded', loadMovieData);
+
+// Sistema de Compartilhamento
+class ShareSystem {
+    constructor() {
+        this.shareModal = document.getElementById('share-modal');
+        this.closeShareModal = document.getElementById('close-share-modal');
+        this.btnShare = document.getElementById('btn-share');
+        this.shareOptions = document.querySelectorAll('.share-option');
+        this.shareUrlInput = document.getElementById('share-url');
+        this.btnCopyUrl = document.getElementById('btn-copy-url');
+        
+         // IMPORTANTE: Garantir que o modal comece fechado
+        if (this.shareModal) {
+            this.shareModal.style.display = 'none';
+        }
+        this.init();
+    }
+    
+    init() {
+        // Event Listeners
+        this.btnShare.addEventListener('click', () => this.openShareModal());
+        this.closeShareModal.addEventListener('click', () => this.closeShareModalFunc());
+        this.shareModal.addEventListener('click', (e) => {
+            if (e.target === this.shareModal) this.closeShareModalFunc();
+        });
+        
+        this.shareOptions.forEach(option => {
+            option.addEventListener('click', () => this.handleShare(option.dataset.platform));
+        });
+        
+        this.btnCopyUrl.addEventListener('click', () => this.copyToClipboard());
+        
+        // Fechar com ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.closeShareModalFunc();
+        });
+    }
+    
+    openShareModal() {
+        // Atualizar URL atual no input
+        const currentUrl = window.location.href;
+        this.shareUrlInput.value = currentUrl;
+        
+        // Gerar texto para compartilhamento
+        const movieTitle = document.getElementById('movie-title').textContent;
+        this.shareText = `Confira o filme "${movieTitle}" no CineMax!`;
+        
+        // Mostrar modal
+        this.shareModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    closeShareModalFunc() {
+        this.shareModal.style.display = 'none';
+        document.body.style.overflow = '';
+        this.btnCopyUrl.textContent = 'Copiar';
+        this.btnCopyUrl.classList.remove('copied');
+    }
+    
+    handleShare(platform) {
+        const url = encodeURIComponent(this.shareUrlInput.value);
+        const text = encodeURIComponent(this.shareText);
+        
+        let shareUrl;
+        
+        switch(platform) {
+            case 'whatsapp':
+                shareUrl = `https://wa.me/?text=${text}%20${url}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                break;
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+                break;
+            case 'email':
+                shareUrl = `mailto:?subject=${encodeURIComponent('Confira este filme!')}&body=${text}%20${url}`;
+                break;
+            case 'copy':
+                this.copyToClipboard();
+                return;
+        }
+        
+        if (platform === 'email') {
+            window.location.href = shareUrl;
+        } else {
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+        
+        this.closeShareModalFunc();
+    }
+    
+    async copyToClipboard() {
+        try {
+            await navigator.clipboard.writeText(this.shareUrlInput.value);
+            this.btnCopyUrl.textContent = 'Copiado!';
+            this.btnCopyUrl.classList.add('copied');
+            
+            // Reset após 2 segundos
+            setTimeout(() => {
+                this.btnCopyUrl.textContent = 'Copiar';
+                this.btnCopyUrl.classList.remove('copied');
+            }, 2000);
+        } catch (err) {
+            // Fallback para navegadores mais antigos
+            this.shareUrlInput.select();
+            document.execCommand('copy');
+            this.btnCopyUrl.textContent = 'Copiado!';
+            this.btnCopyUrl.classList.add('copied');
+            
+            setTimeout(() => {
+                this.btnCopyUrl.textContent = 'Copiar';
+                this.btnCopyUrl.classList.remove('copied');
+            }, 2000);
+        }
+    }
+}
+
+// Inicializar quando a página carregar
+document.addEventListener('DOMContentLoaded', () => {
+    new ShareSystem();
+});

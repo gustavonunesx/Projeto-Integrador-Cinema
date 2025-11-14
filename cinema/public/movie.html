@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEST MOVIES - Filme</title>
     <link rel="stylesheet" href="./styles/movie.css">
-    
-    <!-- IMPORTANTE: Ordem correta dos scripts -->
     <script src="./scripts/movie-data.js"></script>
     <script src="./scripts/api-service.js"></script>
     <script src="./scripts/movie.js" defer></script>
@@ -16,8 +14,17 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
                 <nav>
-                    <ul>
+                    <ul id="mainMenu">
                         <li><a href="index.html">Início</a></li>
                         <li><a href="#" class="active">Filmes</a></li>
                         <li><a href="#">Cinemas</a></li>
@@ -25,6 +32,9 @@
                         <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
             </div>
         </div>
     </header>
@@ -45,20 +55,50 @@
                     </div>
                     <p id="movie-description" class="movie-description">Carregando informações do filme...</p>
                     
-                    <div class="movie-actions">
-                        <button class="btn-action" id="btn-remember">
-                            <span>💾</span>
-                            Lembre-me
-                        </button>
-                        <button class="btn-action" id="btn-share">
-                            <span>📤</span>
-                            Compartilhar
-                        </button>
-                    </div>
+                   <div class="movie-actions">
+                    <button class="btn-action" id="btn-share">
+                        <img src="../images/share.png" alt="Compartilhar" class="share-icon">
+                        Compartilhar
+                    </button>
+                </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Modal de Compartilhamento -->
+    <div class="modal-overlay" id="share-modal">
+        <div class="modal-content share-modal-content">
+            <button class="modal-close" id="close-share-modal">&times;</button>
+            <h2>Compartilhar Filme</h2>
+            <div class="share-options">
+                <button class="share-option" data-platform="whatsapp">
+                    <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                </button>
+                <button class="share-option" data-platform="facebook">
+                    <img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook">
+                    <span>Facebook</span>
+                </button>
+                <button class="share-option" data-platform="twitter">
+                    <img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter">
+                    <span>Twitter</span>
+                </button>
+                <button class="share-option" data-platform="email">
+                    <img src="https://img.icons8.com/color/48/000000/gmail.png" alt="Email">
+                    <span>Email</span>
+                </button>
+                <button class="share-option" data-platform="copy">
+                    <img src="https://img.icons8.com/color/48/000000/copy-link.png" alt="Copiar Link">
+                    <span>Copiar Link</span>
+                </button>
+            </div>
+            <div class="share-link">
+                <input type="text" id="share-url" readonly>
+                <button class="btn-copy" id="btn-copy-url">Copiar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Trailer -->
     <section class="trailer-section">
@@ -145,7 +185,20 @@
                 </div>
                 <div class="footer-section">
                     <h3>Redes Sociais</h3>
-                    <p>Facebook | Instagram | Twitter</p>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=FFFFFF" alt="Facebook" class="social-icon">
+                            
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=FFFFFF" alt="Instagram" class="social-icon">
+                          
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=5MQ0gPAYYx7a&format=png&color=FFFFFF" alt="Twitter" class="social-icon">
+                         
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">

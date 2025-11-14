@@ -17,15 +17,26 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
                 <nav>
-                    <ul>
+                    <ul id="mainMenu">
                         <li><a href="#" class="active">Início</a></li>
-                        
                         <li><a href="#">Cinemas</a></li>
                         <li><a href="/cinema/public/relatorios.html">Relatórios</a></li>
                         <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
             </div>
         </div>
     </header>
@@ -38,7 +49,7 @@
                 <div class="slide-content">
                     <h1>Duna: Parte Dois</h1>
                     <p>A lenda continua na maior aventura do ano</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=duna-2" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -47,7 +58,7 @@
                 <div class="slide-content">
                     <h1>Deadpool & Wolverine</h1>
                     <p>O duo mais explosivo dos cinemas</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=deadpool-3" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -56,7 +67,7 @@
                 <div class="slide-content">
                     <h1>Divertidamente 2</h1>
                     <p>Novas emoções estão chegando</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=inside-out-2" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -65,7 +76,7 @@
                 <div class="slide-content">
                     <h1>O Reino do Planeta dos Macacos</h1>
                     <p>Uma nova era começa</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=kingdom-of-the-planet-of-the-apes" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
         </div>
@@ -139,9 +150,19 @@
                     <p>Telefone: (11) 1234-5678</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Redes Sociais</h3>
-                    <p>Facebook | Instagram | Twitter</p>
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="https://facebook.com" target="_blank" class="social-link" title="Facebook">
+                        <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=FFFFFF" alt="Facebook" class="social-icon">
+                    </a>
+                    <a href="https://instagram.com/guh_nunesx" target="_blank" class="social-link" title="Instagram">
+                        <img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=FFFFFF" alt="Instagram" class="social-icon">
+                    </a>
+                    <a href="https://twitter.com" target="_blank" class="social-link" title="Twitter">
+                        <img src="https://img.icons8.com/?size=100&id=5MQ0gPAYYx7a&format=png&color=FFFFFF" alt="Twitter" class="social-icon">
+                    </a>
                 </div>
+            </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2023 CineMax. Todos os direitos reservados.</p>

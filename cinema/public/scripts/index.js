@@ -17,23 +17,60 @@ document.querySelectorAll('.movie-card').forEach(card => {
 async function loadMoviesFromBackend() {
     console.log('[INDEX] Tentando carregar filmes do backend...');
     
-    // Verificar se backend está disponível
     backendAvailable = await ApiService.isBackendAvailable();
     
     if (!backendAvailable) {
-        console.warn('[INDEX] Backend não disponível, usando dados locais');
+        console.warn('[INDEX] Backend não disponível. Nenhuma seção de filmes será carregada.');
         showBackendStatus(false);
+        // Limpa as seções caso o backend esteja offline
+        document.querySelector('#movies .movies-grid').innerHTML = '<p style="color: white;">Modo Offline. Não foi possível carregar filmes.</p>';
+        document.getElementById('moviesSlider').innerHTML = '<p style="color: white;">Modo Offline.</p>';
         return;
     }
     
     console.log('[INDEX] Backend disponível! Carregando filmes...');
     showBackendStatus(true);
     
-    // Carregar filmes em cartaz
-    await loadFilmesEmCartaz();
-    
-    // Carregar filmes em alta (todos os filmes)
-    await loadFilmesEmAlta();
+    let filmesEmAlta = [];
+    let todosOsFilmes = [];
+    let filmesParaSlider = [];
+
+    // 1. Busca os filmes que estão realmente em cartaz
+    const resultEmCartaz = await ApiService.getFilmesEmCartaz();
+    if (resultEmCartaz.success && resultEmCartaz.data) {
+        // Guarda os 4 primeiros para a seção "Em Alta"
+        filmesEmAlta = resultEmCartaz.data.slice(0, 4);
+        console.log('[INDEX] Filmes EM ALTA definidos:', filmesEmAlta.map(f => f.id));
+        // Renderiza a seção "Filmes em Alta"
+        updateFilmesEmAltaSection(filmesEmAlta);
+    } else {
+        console.error('[INDEX] Erro ao carregar filmes em alta:', resultEmCartaz.error);
+        document.querySelector('#movies .movies-grid').innerHTML = '<p style="color: red;">Erro ao carregar filmes em alta.</p>';
+    }
+
+    // 2. Busca TODOS os filmes
+    const resultTodos = await ApiService.getAllFilmes();
+    if (resultTodos.success && resultTodos.data) {
+        todosOsFilmes = resultTodos.data;
+        console.log('[INDEX] TODOS os filmes recebidos:', todosOsFilmes.length);
+
+        // 3. FILTRA a lista 'todosOsFilmes' para remover os que já estão em 'filmesEmAlta'
+        const idsEmAlta = filmesEmAlta.map(filme => filme.id); // Cria um array só com os IDs
+        
+        filmesParaSlider = todosOsFilmes.filter(filme => {
+            // Mantém o filme na lista APENAS SE o ID dele NÃO ESTIVER na lista idsEmAlta
+            return !idsEmAlta.includes(filme.id); 
+        });
+        
+        console.log(`[INDEX] Filmes para o SLIDER (após filtro): ${filmesParaSlider.length}`, filmesParaSlider.map(f=>f.id));
+
+        // 4. Renderiza o slider "Em Cartaz" com a lista filtrada
+        updateFilmesEmCartazSlider(filmesParaSlider);
+
+    } else {
+        console.error('[INDEX] Erro ao carregar todos os filmes para o slider:', resultTodos.error);
+        document.getElementById('moviesSlider').innerHTML = '<p style="color: red;">Erro ao carregar filmes para o slider.</p>';
+    }
 }
 
 /**
@@ -59,19 +96,20 @@ async function loadFilmesEmAlta() {
 /**
  * Atualizar seção "Filmes em Alta" com dados do backend
  */
-function updateFilmesEmAltaSection(filmes) {
+function updateFilmesEmAltaSection(filmes) { // Recebe os filmes como argumento
     const moviesGrid = document.querySelector('#movies .movies-grid');
     
     if (!moviesGrid) return;
+    moviesGrid.innerHTML = ''; // Limpa o grid
     
-    // Limpar grid atual
-    moviesGrid.innerHTML = '';
-    
-    // Adicionar filmes do backend
-    filmes.forEach(filme => {
-        const card = createMovieCard(filme);
-        moviesGrid.appendChild(card);
-    });
+    if (filmes && filmes.length > 0) {
+        filmes.forEach(filme => {
+            const card = createMovieCard(filme);
+            moviesGrid.appendChild(card);
+        });
+    } else {
+        moviesGrid.innerHTML = '<p style="color: white;">Nenhum filme em alta no momento.</p>';
+    }
 }
 
 /**
@@ -96,103 +134,39 @@ async function loadFilmesEmCartaz() {
 /**
  * Atualizar slider "Em Cartaz" com dados do backend
  */
-function updateFilmesEmCartazSlider(filmes) {
+function updateFilmesEmCartazSlider(filmes) { // Recebe os filmes FILTRADOS como argumento
     const slider = document.getElementById('moviesSlider');
     
     if (!slider) {
         console.error("[INDEX] Elemento do slider 'moviesSlider' não encontrado.");
         return;
     }
-    
-    // Limpar slider (removendo o <p>Carregando...</p>)
-    slider.innerHTML = '';
-    
-    // Adicionar filmes do backend
+    slider.innerHTML = ''; // Limpa o slider
+
     if (filmes && filmes.length > 0) {
         filmes.forEach(filme => {
             const slide = document.createElement('div');
             slide.className = 'movie-slide';
-            
-            const card = createMovieCard(filme); // Reutiliza a função que cria o card
+            const card = createMovieCard(filme);
             slide.appendChild(card);
-            
             slider.appendChild(slide);
         });
-    } else {
-        // Caso a API retorne uma lista vazia
-        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
-        // Limpa os indicadores se não houver filmes
-        const indicatorsContainer = document.getElementById('moviesIndicators');
-        if (indicatorsContainer) indicatorsContainer.innerHTML = '';
-        return; // Não precisa inicializar o slider se não houver filmes
-    }
-    
-    // --- INÍCIO DA CORREÇÃO IMPORTANTE ---
-    // Reinicializar e Atualizar o slider
-    if (window.moviesSliderInstance) {
-        const sliderInstance = window.moviesSliderInstance;
-        
-        if(!slider){
-            console.log(`[INDEX] Atualizando slider com ${filmes.length} filmes.`);
-            return;
-        }
-
-        slider.innerHTML = '';
-
-        if (filmes && filmes.length > 0) {
-            filmes.forEach(filme => {
-                const slide = document.createElement('div');
-                slide.className = 'movie-slide';
-                const card = createMovieCard(filme);
-                slide.appendChild(card);
-                slider.appendChild(slide);
-            });
         console.log(`[INDEX] ${filmes.length} slides adicionados ao HTML do slider.`);
 
-        // --- CORREÇÃO AQUI ---
-        // Chama o método reinitialize DEPOIS que os slides estão no HTML
+        // Reinicializa o slider com os novos slides
         if (window.moviesSliderInstance) {
              window.moviesSliderInstance.reinitialize(); 
         } else {
             console.warn("[INDEX] Instância do slider não encontrada para reinicializar.");
         }
-        // --- FIM DA CORREÇÃO ---
 
     } else {
-        // Caso a API retorne uma lista vazia
-        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum filme encontrado.</p>';
-        // Limpa os indicadores se não houver filmes
-        if (window.moviesSliderInstance && window.moviesSliderInstance.indicatorsContainer) {
-            window.moviesSliderInstance.indicatorsContainer.innerHTML = '';
+        slider.innerHTML = '<p style="color: white; text-align: center;">Nenhum outro filme disponível no momento.</p>';
+        // Limpa os indicadores (se ainda existirem) e desabilita botões se não houver filmes
+        if (window.moviesSliderInstance) {
+            window.moviesSliderInstance.reinitialize(); // Chama para limpar/desabilitar controles
         }
     }
-
-        
-
-        // 1. Atualiza a lista interna de slides DENTRO do objeto sliderInstance
-        sliderInstance.slides = slider.querySelectorAll('.movie-slide'); 
-        sliderInstance.totalSlides = sliderInstance.slides.length;
-        
-        // 2. Recalcula quantas páginas/posições existem
-        // É importante recalcular slidesPerView caso a janela tenha mudado de tamanho
-        sliderInstance.slidesPerView = sliderInstance.getSlidesPerView(); 
-        sliderInstance.maxPosition = Math.max(0, sliderInstance.totalSlides - sliderInstance.slidesPerView);
-        
-        // 3. Garante que a posição atual não seja inválida (ex: estava na pág 3 e agora só tem 2)
-        // Reinicia na primeira página para simplificar
-        sliderInstance.currentPosition = 0; 
-
-        // 4. Recria os indicadores (bolinhas) com base no novo número de slides e páginas
-        sliderInstance.createIndicators(); 
-        
-        // 5. Atualiza a posição visual do slider (translateX) e habilita/desabilita os botões
-        sliderInstance.updateSlider(); 
-        
-        console.log("[INDEX] Slider de 'Em Cartaz' atualizado.");
-    } else {
-        console.warn("[INDEX] Instância do slider (window.moviesSliderInstance) não encontrada para atualização.");
-    }
-    // --- FIM DA CORREÇÃO IMPORTANTE ---
 }
 
 /**
@@ -280,18 +254,20 @@ function showBackendStatus(isOnline) {
 }
 
 /**
- * SLIDERS (mantém funcionalidade original)
+ * SLIDERS COM SWIPE PARA MOBILE
  */
 
-// Slider Hero
+// Slider Hero com Swipe
 class HeroSlider {
     constructor() {
-        this.slides = document.querySelectorAll('.slide');
-        this.dots = document.querySelectorAll('.dot');
+        this.slides = document.querySelectorAll('.hero-slider .slide');
+        this.dots = document.querySelectorAll('.slider-dots .dot');
         this.prevBtn = document.querySelector('.prev-btn');
         this.nextBtn = document.querySelector('.next-btn');
         this.currentSlide = 0;
-        this.slideInterval = null;
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentX = 0;
         
         this.init();
     }
@@ -299,75 +275,134 @@ class HeroSlider {
     init() {
         if (!this.slides.length) return;
         
-        this.prevBtn.addEventListener('click', () => this.prevSlide());
-        this.nextBtn.addEventListener('click', () => this.nextSlide());
+        // Event listeners para botões
+        if (this.prevBtn && this.nextBtn) {
+            this.prevBtn.addEventListener('click', () => this.prevSlide());
+            this.nextBtn.addEventListener('click', () => this.nextSlide());
+        }
         
-        this.dots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                const slideIndex = parseInt(e.target.getAttribute('data-slide'));
-                this.goToSlide(slideIndex);
-            });
+        // Event listeners para dots
+        this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToSlide(index));
         });
         
-        this.startAutoSlide();
+        // Event listeners para swipe
+        this.addSwipeSupport();
         
-        const hero = document.querySelector('.hero');
-        hero.addEventListener('mouseenter', () => this.stopAutoSlide());
-        hero.addEventListener('mouseleave', () => this.startAutoSlide());
+        // Auto-play
+        this.startAutoPlay();
+        
+        // Esconder setas em mobile
+        this.handleResponsive();
+        window.addEventListener('resize', () => this.handleResponsive());
     }
     
-    showSlide(index) {
-        this.slides.forEach(slide => slide.classList.remove('active'));
-        this.dots.forEach(dot => dot.classList.remove('active'));
+    addSwipeSupport() {
+        const slider = document.querySelector('.hero-slider');
         
-        this.slides[index].classList.add('active');
-        this.dots[index].classList.add('active');
+        // Eventos de mouse/touch
+        slider.addEventListener('mousedown', this.startDrag.bind(this));
+        slider.addEventListener('touchstart', this.startDrag.bind(this));
         
-        this.currentSlide = index;
+        slider.addEventListener('mousemove', this.drag.bind(this));
+        slider.addEventListener('touchmove', this.drag.bind(this));
+        
+        slider.addEventListener('mouseup', this.endDrag.bind(this));
+        slider.addEventListener('touchend', this.endDrag.bind(this));
+        slider.addEventListener('mouseleave', this.endDrag.bind(this));
+    }
+    
+    startDrag(e) {
+        this.isDragging = true;
+        this.startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+        this.currentX = this.startX;
+    }
+    
+    drag(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        this.currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    }
+    
+    endDrag(e) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        const diff = this.startX - this.currentX;
+        const minSwipeDistance = 50; // Distância mínima para considerar swipe
+        
+        if (Math.abs(diff) > minSwipeDistance) {
+            if (diff > 0) {
+                this.nextSlide(); // Swipe para esquerda
+            } else {
+                this.prevSlide(); // Swipe para direita
+            }
+        }
     }
     
     nextSlide() {
-        let nextIndex = this.currentSlide + 1;
-        if (nextIndex >= this.slides.length) {
-            nextIndex = 0;
-        }
-        this.showSlide(nextIndex);
+        this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+        this.updateSlider();
     }
     
     prevSlide() {
-        let prevIndex = this.currentSlide - 1;
-        if (prevIndex < 0) {
-            prevIndex = this.slides.length - 1;
-        }
-        this.showSlide(prevIndex);
+        this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+        this.updateSlider();
     }
     
     goToSlide(index) {
-        if (index >= 0 && index < this.slides.length) {
-            this.showSlide(index);
-        }
+        this.currentSlide = index;
+        this.updateSlider();
     }
     
-    startAutoSlide() {
-        this.slideInterval = setInterval(() => {
+    updateSlider() {
+        // Atualizar slides
+        this.slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === this.currentSlide);
+        });
+        
+        // Atualizar dots
+        this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentSlide);
+        });
+    }
+    
+    startAutoPlay() {
+        // Auto-play a cada 5 segundos
+        setInterval(() => {
             this.nextSlide();
         }, 5000);
     }
     
-    stopAutoSlide() {
-        if (this.slideInterval) {
-            clearInterval(this.slideInterval);
+    handleResponsive() {
+        const isMobile = window.innerWidth <= 768;
+        const sliderControls = document.querySelector('.slider-controls');
+        
+        if (sliderControls) {
+            if (isMobile) {
+                sliderControls.style.display = 'none';
+            } else {
+                sliderControls.style.display = 'flex';
+            }
         }
     }
 }
 
-// Slider para Filmes em Cartaz
+// Slider para Filmes em Cartaz com Swipe
 class MoviesSlider {
     constructor() {
         this.slider = document.getElementById('moviesSlider');
         this.prevBtn = document.getElementById('prevBtnMovies');
         this.nextBtn = document.getElementById('nextBtnMovies');
         this.indicatorsContainer = document.getElementById('moviesIndicators');
+        this.currentPosition = 0;
+        this.slidesPerView = this.getSlidesPerView();
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentTranslate = 0;
+        this.prevTranslate = 0;
+        this.animationID = 0;
         
         if (!this.slider) return;
         
@@ -388,8 +423,64 @@ class MoviesSlider {
         }
         
         this.createIndicators();
+        this.addSwipeSupport();
         window.addEventListener('resize', () => this.handleResize());
         this.updateControls();
+    }
+    
+    addSwipeSupport() {
+        // Touch events para mobile
+        this.slider.addEventListener('touchstart', this.dragStart.bind(this));
+        this.slider.addEventListener('touchend', this.dragEnd.bind(this));
+        this.slider.addEventListener('touchmove', this.dragging.bind(this));
+
+        // Mouse events para desktop
+        this.slider.addEventListener('mousedown', this.dragStart.bind(this));
+        this.slider.addEventListener('mouseup', this.dragEnd.bind(this));
+        this.slider.addEventListener('mouseleave', this.dragEnd.bind(this));
+        this.slider.addEventListener('mousemove', this.dragging.bind(this));
+    }
+    
+    dragStart(event) {
+        this.isDragging = true;
+        this.startX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        this.prevTranslate = this.currentTranslate;
+        cancelAnimationFrame(this.animationID);
+        this.slider.style.transition = 'none';
+        this.slider.style.cursor = 'grabbing';
+    }
+
+    dragging(event) {
+        if (!this.isDragging) return;
+
+        const currentX = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        const diffX = currentX - this.startX;
+        this.currentTranslate = this.prevTranslate + diffX;
+
+        this.animationID = requestAnimationFrame(() => {
+            this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
+        });
+    }
+
+    dragEnd() {
+        if (!this.isDragging) return;
+
+        this.isDragging = false;
+        cancelAnimationFrame(this.animationID);
+        this.slider.style.transition = 'transform 0.5s ease-in-out';
+        this.slider.style.cursor = 'grab';
+
+        const movedBy = this.currentTranslate - this.prevTranslate;
+        const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth + 20 : 270;
+        const threshold = slideWidth / 4;
+
+        if (movedBy < -threshold && this.currentPosition < this.maxPosition) {
+            this.currentPosition = Math.min(this.maxPosition, this.currentPosition + this.slidesPerView);
+        } else if (movedBy > threshold && this.currentPosition > 0) {
+            this.currentPosition = Math.max(0, this.currentPosition - this.slidesPerView);
+        }
+
+        this.updateSlider();
     }
 
     reinitialize() {
@@ -399,12 +490,10 @@ class MoviesSlider {
         
         if (this.totalSlides === 0) {
             console.warn("[Slider] Nenhum slide encontrado para inicializar.");
-             // Limpa indicadores se não houver slides
             if (this.indicatorsContainer) this.indicatorsContainer.innerHTML = '';
-             // Desabilita botões
             if (this.prevBtn) this.prevBtn.disabled = true;
             if (this.nextBtn) this.nextBtn.disabled = true;
-            return; 
+            return;
         }
 
         console.log(`[Slider] Encontrados ${this.totalSlides} slides.`);
@@ -412,11 +501,9 @@ class MoviesSlider {
         this.slidesPerView = this.getSlidesPerView();
         this.maxPosition = Math.max(0, this.totalSlides - this.slidesPerView);
         
-        // Sempre volta para o início ao recarregar
-        this.currentPosition = 0; 
-
-        this.createIndicators(); // Recria as bolinhas
-        this.updateSlider();     // Atualiza a posição visual e os botões
+        this.currentPosition = 0;
+        this.createIndicators();
+        this.updateSlider();
         console.log("[Slider] Reinicialização completa.");
     }
     
@@ -443,21 +530,29 @@ class MoviesSlider {
     }
     
     updateSlider() {
-        if (!this.slides.length) return;
-        
+        if (!this.slides || this.slides.length === 0) return;
+
         const slideWidth = this.slides[0].offsetWidth + 20;
-        this.slider.style.transform = `translateX(-${this.currentPosition * slideWidth}px)`;
+        this.currentTranslate = -this.currentPosition * slideWidth;
+
+        this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
         this.updateIndicators();
         this.updateControls();
-        console.log(`[Slider] Atualizando para posição ${this.currentPosition}, max ${this.maxPosition}`);
     }
     
     updateIndicators() {
-        if (!this.indicatorsContainer) return;
+        if (!this.indicatorsContainer || !this.slides || this.slides.length === 0) {
+            if(this.indicatorsContainer) this.indicatorsContainer.innerHTML = '';
+            return;
+        }
         
-        const currentPage = Math.floor(this.currentPosition / this.slidesPerView);
         const indicators = this.indicatorsContainer.querySelectorAll('.indicator');
-        
+        if (!indicators || indicators.length === 0) return;
+
+        const totalPages = Math.ceil(this.totalSlides / this.slidesPerView);
+        let currentPage = Math.round(this.currentPosition / this.slidesPerView);
+        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1));
+
         indicators.forEach((indicator, index) => {
             indicator.classList.toggle('active', index === currentPage);
         });
@@ -524,10 +619,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Inicializar sliders
     new HeroSlider();
-    window.moviesSliderInstance = new MoviesSlider(); 
-  
-    window.moviesSliderInstance.reinitialize(); // Faz a inicialização completa
+    window.moviesSliderInstance = new MoviesSlider();
+    window.moviesSliderInstance.reinitialize();
     
     // Carregar filmes do backend
     await loadMoviesFromBackend();
+});
+
+// Controle do menu mobile para index.html
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    if (menuToggle && mainMenu && menuOverlay) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            mainMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mainMenu.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        menuOverlay.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            mainMenu.classList.remove('active');
+            this.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // Fechar menu ao clicar em um link
+        const menuLinks = mainMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuToggle.classList.remove('active');
+                mainMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 });
