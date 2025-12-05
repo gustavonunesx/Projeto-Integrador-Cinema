@@ -9,20 +9,20 @@ Sistema completo de gerenciamento de cinema desenvolvido com Spring Boot, oferec
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Arquitetura do Sistema](#arquitetura-do-sistema)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Configuração](#configuração)
-- [Executando o Projeto](#executando-o-projeto)
-- [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
-- [Endpoints da API](#endpoints-da-api)
-- [Exemplos de Uso](#exemplos-de-uso)
-- [Modelo de Dados](#modelo-de-dados)
-- [Contribuindo](#contribuindo)
-- [Licença](#licença)
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Arquitetura do Sistema](#-arquitetura-do-sistema)
+- [Pré-requisitos](#-pré-requisitos)
+- [Instalação](#-instalação)
+- [Configuração](#-configuração)
+- [Executando o Projeto](#-executando-o-projeto)
+- [Estrutura do Banco de Dados](#-estrutura-do-banco-de-dados)
+- [Endpoints da API](#-endpoints-da-api)
+- [Exemplos de Uso](#-exemplos-de-uso)
+- [Modelo de Dados](#-modelo-de-dados)
+- [Contribuindo](#-contribuindo)
+- [Licença](#-licença)
 
 ## 🎯 Sobre o Projeto
 
@@ -171,8 +171,8 @@ Antes de começar, você precisará ter instalado em sua máquina:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/Projeto-Integrador-Cinema.git
-cd Projeto-Integrador-Cinema
+git clone https://github.com/seu-usuario/cinema-backend.git
+cd cinema-backend
 ```
 
 ### 2. Configure o banco de dados MySQL
@@ -664,7 +664,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 👨‍💻
+## 👨‍💻 Autor
 
 Desenvolvido como projeto educacional para aprendizado de Spring Boot e desenvolvimento de APIs RESTful.
 
