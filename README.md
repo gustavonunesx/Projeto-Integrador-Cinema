@@ -171,8 +171,8 @@ Antes de começar, você precisará ter instalado em sua máquina:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/cinema-backend.git
-cd cinema-backend
+git clone https://github.com/seu-usuario/Projeto-Integrador-Cinema.git
+cd Projeto-Integrador-Cinema
 ```
 
 ### 2. Configure o banco de dados MySQL
@@ -664,7 +664,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 👨‍💻 Autor
+## 👨‍💻
 
 Desenvolvido como projeto educacional para aprendizado de Spring Boot e desenvolvimento de APIs RESTful.
 
