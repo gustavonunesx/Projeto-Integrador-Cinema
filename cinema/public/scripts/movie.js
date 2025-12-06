@@ -132,6 +132,11 @@ function loadTrailer(trailerUrl) {
         }
         iframe.style.display = 'none'; // Garante que o iframe está escondido
     }
+    
+    // Atualizar datas
+    updateDateSelector();
+    
+    console.log(`[MOVIE] Dados exibidos - Origem: ${isFromBackend ? 'Backend' : 'Local'}`);
 }
 
 /**
