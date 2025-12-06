@@ -4,30 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineMax - Seu Cinema Online</title>
-    <link rel="stylesheet" href="./styles/index.css">
-    <script src="./scripts/movie-data.js"></script>
-    <script src="./scripts/index.js"></script>
+    <link rel="stylesheet" href="./styles/index.css">    
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/index.js" defer></script>
 </head>
 <body>
-    <!-- Headeeer -->
+    <!-- Header -->
     <header>
         <div class="container">
             <div class="header-content">
                 <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
                 <nav>
-                    <ul>
+                    <ul id="mainMenu">
                         <li><a href="#" class="active">Início</a></li>
-                        <li><a href="#">Filmes</a></li>
-                        <li><a href="#">Cinemas</a></li>
-                        <li><a href="#">Promoções</a></li>
-                        <li><a href="#">Minha Conta</a></li>
+                        <li><a href="/cinema/public/cinema.html">Cinemas</a></li>
+                        <li><a href="/cinema/public/relatorios.html">Relatórios</a></li>
+                        <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
             </div>
         </div>
     </header>
 
-   <!-- Banner Principal - Slider -->
+    <!-- Banner Principal - Slider -->
     <section class="hero">
         <div class="hero-slider">
             <!-- Slide 1 -->
@@ -35,7 +46,7 @@
                 <div class="slide-content">
                     <h1>Duna: Parte Dois</h1>
                     <p>A lenda continua na maior aventura do ano</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=duna-2" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -44,7 +55,7 @@
                 <div class="slide-content">
                     <h1>Deadpool & Wolverine</h1>
                     <p>O duo mais explosivo dos cinemas</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=deadpool-3" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -53,7 +64,7 @@
                 <div class="slide-content">
                     <h1>Divertidamente 2</h1>
                     <p>Novas emoções estão chegando</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=inside-out-2" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
             
@@ -62,7 +73,7 @@
                 <div class="slide-content">
                     <h1>O Reino do Planeta dos Macacos</h1>
                     <p>Uma nova era começa</p>
-                    <a href="#booking" class="btn">Comprar Ingressos</a>
+                    <a href="movie.html?id=kingdom-of-the-planet-of-the-apes" class="btn">Comprar Ingressos</a>
                 </div>
             </div>
         </div>
@@ -88,45 +99,9 @@
         <section id="movies">
             <h2 class="section-title">Filmes em Alta</h2>
             <div class="movies-grid">
-                <!-- Filme 1 -->
-                <div class="movie-card" onclick="goToMovie('duna-2')">
-                    <img src="../images/dunapt2-capa.webp" alt="Duna: Parte Dois" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Duna: Parte Dois</div>
-                        <div class="movie-genre">Ficção Científica, Aventura</div>
-                    </div>
-                </div>
-                
-                <!-- Filme 2 -->
-                <div class="movie-card" onclick="goToMovie('deadpool-3')">
-                    <img src="../images/Deadpool_&_Wolverine_cartaz.jpg" alt="Deadpool & Wolverine" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Deadpool & Wolverine</div>
-                        <div class="movie-genre">Ação, Comédia</div>
-                    </div>
-                </div>
-                
-                <!-- Filme 3 -->
-                <div class="movie-card" onclick="goToMovie('inside-out-2')">
-                    <img src="../images/divertidamente-capa.webp" alt="Divertidamente 2" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">Divertidamente 2</div>
-                        <div class="movie-genre">Animação, Comédia</div>
-                    </div>
-                </div>
-                
-                <!-- Filme 4 -->
-                <div class="movie-card" onclick="goToMovie('kingdom-of-the-planet-of-the-apes')">
-                    <img src="../images/planeta-dos-macacos-capa.webp" alt="O Reino do Planeta dos Macacos" class="movie-poster">
-                    <div class="movie-info">
-                        <div class="movie-title">O Reino do Planeta dos Macacos</div>
-                        <div class="movie-genre">Ficção Científica, Ação</div>
-                    </div>
-                </div>
+                <p style="color: white;">Carregando filmes...</p> 
             </div>
         </section>
-
-       
 
         <!-- Filmes em Cartaz -->
         <section class="movies-section">
@@ -134,77 +109,7 @@
             
             <div class="movies-slider-container">
                 <div class="movies-slider" id="moviesSlider">
-                    <!-- Filme 1 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('bad-boys-4')">
-                            <img src="../images/badboys4.webp" alt="Bad Boys 4" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Bad Boys 4</div>
-                                <div class="movie-genre">Ação, Comédia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filme 2 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('the-fall-guy')">
-                            <img src="../images/duble-capa.jpg" alt="O Dublê" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">O Dublê</div>
-                                <div class="movie-genre">Ação, Comédia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filme 3 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('furiosa')">
-                            <img src="../images/furiosa-capa.webp" alt="Furiosa: Uma Saga Mad Max" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Furiosa: Uma Saga Mad Max</div>
-                                <div class="movie-genre">Ação, Ficção Científica</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filme 4 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('godzilla-x-kong')">
-                            <img src="../images/godzilla-capa.webp" alt="Godzilla x Kong: O Novo Império" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Godzilla x Kong: O Novo Império</div>
-                                <div class="movie-genre">Ação, Ficção Científica</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filme 5 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('oppenheimer')">
-                            <img src="../images/openheimer-capa.webp" alt="Oppenheimer" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Oppenheimer</div>
-                                <div class="movie-genre">Drama, Histórico</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filme 6 -->
-                    <div class="movie-slide">
-                        <div class="movie-card" onclick="goToMovie('barbie')">
-                            <img src="../images/barbie-capa.jpg" alt="Barbie" class="movie-poster">
-                            <div class="movie-info">
-                                <div class="movie-title">Barbie</div>
-                                <div class="movie-genre">Comédia, Aventura</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Controles do Slider -->
-                <div class="slider-controls-movies">
-                    <button class="slider-btn-movies prev-btn-movies" id="prevBtnMovies">‹</button>
-                    <button class="slider-btn-movies next-btn-movies" id="nextBtnMovies">›</button>
+                    <p style="color: white;">Carregando...</p>
                 </div>
             </div>
             
@@ -228,9 +133,6 @@
         </section>
     </main>
 
-
-     
-
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -245,17 +147,24 @@
                     <p>Telefone: (11) 1234-5678</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Redes Sociais</h3>
-                    <p>Facebook | Instagram | Twitter</p>
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="https://facebook.com" target="_blank" class="social-link" title="Facebook">
+                        <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=FFFFFF" alt="Facebook" class="social-icon">
+                    </a>
+                    <a href="https://instagram.com/guh_nunesx" target="_blank" class="social-link" title="Instagram">
+                        <img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=FFFFFF" alt="Instagram" class="social-icon">
+                    </a>
+                    <a href="https://twitter.com" target="_blank" class="social-link" title="Twitter">
+                        <img src="https://img.icons8.com/?size=100&id=5MQ0gPAYYx7a&format=png&color=FFFFFF" alt="Twitter" class="social-icon">
+                    </a>
                 </div>
+            </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2023 CineMax. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
-
-   
-   
 </body>
 </html>

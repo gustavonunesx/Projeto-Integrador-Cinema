@@ -6,22 +6,35 @@
     <title>BEST MOVIES - Filme</title>
     <link rel="stylesheet" href="./styles/movie.css">
     <script src="./scripts/movie-data.js"></script>
-    <script src="./scripts/movie.js"></script>
+    <script src="./scripts/api-service.js"></script>
+    <script src="./scripts/movie.js" defer></script>
 </head>
 <body>
     <header class="movie-header">
         <div class="container">
             <div class="header-content">
                 <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
                 <nav>
-                    <ul>
-                        <li><a href="index.html" class="active">Início</a></li>
-                        <li><a href="#">Filmes</a></li>
+                    <ul id="mainMenu">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="#" class="active">Filmes</a></li>
                         <li><a href="#">Cinemas</a></li>
                         <li><a href="#">Promoções</a></li>
                         <li><a href="login.html">Minha Conta</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
             </div>
         </div>
     </header>
@@ -31,42 +44,71 @@
         <div class="container">
             <div class="movie-hero-content">
                 <div class="movie-poster">
-                    <img id="movie-poster-img" src="" alt="" class="poster-image">
+                    <img id="movie-poster-img" src="../images/placeholder.jpg" alt="Carregando..." class="poster-image">
                 </div>
                 <div class="movie-info">
                     <h1 id="movie-title" class="movie-title">Carregando...</h1>
                     <div class="movie-meta">
-                        <span id="movie-duration" class="duration"></span>
-                        <span id="movie-genre" class="genre"></span>
-                        <span id="movie-rating" class="rating"></span>
+                        <span id="movie-duration" class="duration">--</span>
+                        <span id="movie-genre" class="genre">--</span>
+                        <span id="movie-rating" class="rating">--</span>
                     </div>
-                    <p id="movie-description" class="movie-description"></p>
+                    <p id="movie-description" class="movie-description">Carregando informações do filme...</p>
                     
-                    <div class="movie-actions">
-                        <button class="btn-action" id="btn-remember">
-                            <span>💾</span>
-                            Lembre-me
-                        </button>
-                        <button class="btn-action" id="btn-share">
-                            <span>📤</span>
-                            Compartilhar
-                        </button>
-                    </div>
+                   <div class="movie-actions">
+                    <button class="btn-action" id="btn-share">
+                        <img src="../images/share.png" alt="Compartilhar" class="share-icon">
+                        Compartilhar
+                    </button>
+                </div>
                 </div>
             </div>
         </div>
     </section>
 
-        <!-- Trailer -->
+    <!-- Modal de Compartilhamento -->
+    <div class="modal-overlay" id="share-modal">
+        <div class="modal-content share-modal-content">
+            <button class="modal-close" id="close-share-modal">&times;</button>
+            <h2>Compartilhar Filme</h2>
+            <div class="share-options">
+                <button class="share-option" data-platform="whatsapp">
+                    <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                </button>
+                <button class="share-option" data-platform="facebook">
+                    <img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook">
+                    <span>Facebook</span>
+                </button>
+                <button class="share-option" data-platform="twitter">
+                    <img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter">
+                    <span>Twitter</span>
+                </button>
+                <button class="share-option" data-platform="email">
+                    <img src="https://img.icons8.com/color/48/000000/gmail.png" alt="Email">
+                    <span>Email</span>
+                </button>
+                <button class="share-option" data-platform="copy">
+                    <img src="https://img.icons8.com/color/48/000000/copy-link.png" alt="Copiar Link">
+                    <span>Copiar Link</span>
+                </button>
+            </div>
+            <div class="share-link">
+                <input type="text" id="share-url" readonly>
+                <button class="btn-copy" id="btn-copy-url">Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trailer -->
     <section class="trailer-section">
         <div class="container">
             <h2>Trailer</h2>
             <div class="trailer-container">
-                <!-- Substitua o placeholder por isto -->
                 <div class="video-wrapper" id="trailer-wrapper">
                     <div class="video-placeholder" id="trailer-placeholder">
                         <div class="play-button">▶</div>
-                        <p>Clique para assistir ao trailer</p>
+                        <p>Carregando trailer...</p>
                     </div>
                     <iframe 
                         id="trailer-iframe"
@@ -97,79 +139,32 @@
             <div class="date-selector">
                 <div class="date-option active" data-date="0">
                     <span class="day">HOJE</span>
-                    <span class="date" id="date-0">11/10</span>
+                    <span class="date" id="date-0">--/--</span>
                 </div>
                 <div class="date-option" data-date="1">
-                    <span class="day">DOM</span>
-                    <span class="date" id="date-1">12/10</span>
+                    <span class="day">AMANHÃ</span>
+                    <span class="date" id="date-1">--/--</span>
                 </div>
                 <div class="date-option" data-date="2">
                     <span class="day">SEG</span>
-                    <span class="date" id="date-2">13/10</span>
+                    <span class="date" id="date-2">--/--</span>
                 </div>
                 <div class="date-option" data-date="3">
                     <span class="day">TER</span>
-                    <span class="date" id="date-3">14/10</span>
+                    <span class="date" id="date-3">--/--</span>
                 </div>
                 <div class="date-option" data-date="4">
                     <span class="day">QUA</span>
-                    <span class="date" id="date-4">15/10</span>
+                    <span class="date" id="date-4">--/--</span>
                 </div>
             </div>
 
             <!-- Cinemas e Horários -->
             <div class="cinemas-container">
+                <!-- As sessões serão carregadas dinamicamente do backend -->
                 <div class="cinema-card">
-                    <h3 class="cinema-name">Cine Araújo Campo Limpo</h3>
-                    <p class="cinema-address">Estrada de campo limpo, 459 | Santo Amaro</p>
-                    
-                    <div class="session-types">
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">20:30</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">VIP LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">16:00</span>
-                                <span class="time-option">18:30</span>
-                                <span class="time-option">21:00</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">3D LASER</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">18:00</span>
-                            </div>
-                        </div>
-                        
-                        <div class="session-type">
-                            <div class="type-header">
-                                <span class="type-name">DOLEY ATMOS</span>
-                                <span class="type-audio">DUBLADO</span>
-                            </div>
-                            <div class="session-times">
-                                <span class="time-option">16:30</span>
-                                <span class="time-option">19:00</span>
-                                <span class="time-option">21:30</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-book" onclick="selectSession()">Escolher Assentos</button>
+                    <h3 class="cinema-name">Carregando sessões...</h3>
+                    <p class="cinema-address">Por favor, aguarde...</p>
                 </div>
             </div>
         </div>
@@ -190,7 +185,20 @@
                 </div>
                 <div class="footer-section">
                     <h3>Redes Sociais</h3>
-                    <p>Facebook | Instagram | Twitter</p>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=FFFFFF" alt="Facebook" class="social-icon">
+                            
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=FFFFFF" alt="Instagram" class="social-icon">
+                          
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=5MQ0gPAYYx7a&format=png&color=FFFFFF" alt="Twitter" class="social-icon">
+                         
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -198,6 +206,51 @@
             </div>
         </div>
     </footer>
-  
+
+    <div id="seat-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSeatModal()">&times;</button>
+            <h2>Escolha seus assentos</h2>
+            
+            <div class="seat-selection-container">
+                <div class="screen-legend">TELA</div>
+                
+                <div id="seat-grid" class="seat-grid">
+                    <p>Carregando assentos...</p>
+                </div>
+                
+                <div class="seat-legend">
+                    <div class="legend-item"><span class="seat-icon available"></span> Disponível</div>
+                    <div class="legend-item"><span class="seat-icon selected"></span> Selecionado</div>
+                    <div class="legend-item"><span class="seat-icon occupied"></span> Ocupado</div>
+                </div>
+            </div>
+            
+            <div class="booking-summary">
+                <p>Sessão: <span id="summary-session-time">--:--</span></p>
+                <p>Assentos: <span id="summary-seats">Nenhum</span></p>
+                <p>Total: <span id="summary-total">R$ 0,00</span></p>
+                <button class="btn-confirm-booking" onclick="confirmBooking()">Confirmar Reserva</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-modal" class="modal-overlay" style="display: none;" onclick="closeCustomAlert()">
+        <div class="modal-content alert-content" onclick="event.stopPropagation()">
+            <h3 id="alert-title">Atenção</h3>
+            <p id="alert-message">Mensagem de alerta aqui.</p>
+            <button class="btn-confirm-booking" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="cpf-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content alert-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeCpfModal()">&times;</button>
+            <h3>Confirmação de Reserva</h3>
+            <p>Por favor, digite seu CPF para finalizar a reserva:</p>
+            <input type="text" id="cpf-input" class="cpf-input" placeholder="Apenas números (11 dígitos)">
+            <button class="btn-confirm-booking" onclick="handleCpfSubmit()">Confirmar CPF</button>
+        </div>
+    </div>
 </body>
 </html>

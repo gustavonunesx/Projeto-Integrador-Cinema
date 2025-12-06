@@ -1,0 +1,148 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #141414;
+    color: #fff;
+}
+
+/* Container padrão */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header (igual ao index) */
+header {
+    background-color: #000;
+    padding: 15px 0;
+    border-bottom: 3px solid #e50914;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8em;
+    color: #e50914;
+    font-weight: bold;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-weight: 500;
+}
+
+nav a:hover,
+nav a.active {
+    color: #e50914;
+}
+
+/* Seção Cinemas */
+.cinemas-section {
+    margin: 60px 0;
+    text-align: center;
+}
+
+.section-title {
+    color: #e50914;
+    border-bottom: 2px solid #e50914;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.subtitle {
+    color: #ccc;
+    margin-bottom: 40px;
+    font-size: 1.1em;
+}
+
+.cinema-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.cinema-card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: left;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.cinema-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+.cinema-name {
+    color: #e50914;
+    font-size: 1.3em;
+    margin-bottom: 8px;
+}
+
+.cinema-address {
+    color: #aaa;
+    font-size: 0.95em;
+    margin-bottom: 12px;
+}
+
+.cinema-distance {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Footer (igual ao index) */
+footer {
+    background-color: #000;
+    padding: 40px 0 20px;
+    border-top: 3px solid #e50914;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h3 {
+    color: #e50914;
+    margin-bottom: 10px;
+}
+
+.footer-section p {
+    color: #ccc;
+    font-size: 0.95em;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #222;
+    margin-top: 20px;
+    padding-top: 10px;
+    color: #aaa;
+    font-size: 0.9em;
+}

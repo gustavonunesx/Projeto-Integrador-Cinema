@@ -9,6 +9,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
@@ -23,6 +27,7 @@ public class Sessao {
 
     @ManyToOne
     @JoinColumn(name = "filme_id", nullable = false)
+    @JsonIgnore
     private Filme filme;
 
     @ManyToOne
@@ -44,9 +49,10 @@ public class Sessao {
     private Integer assentosDisponiveis;
 
     @OneToMany(mappedBy = "sessao", cascade = CascadeType.ALL)
+    @JsonManagedReference("sessao-assento")
     private List<Assento> assentos = new ArrayList<>();
 
     @OneToMany(mappedBy = "sessao")
+    @JsonManagedReference("sessao-reserva")
     private List<Reserva> reservas = new ArrayList<>();
-
 }
