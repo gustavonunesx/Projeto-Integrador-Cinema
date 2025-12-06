@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Ingressos - CineMax</title>
+    <link rel="stylesheet" href="./styles/tickets.css">
+    <script src="./scripts/tickets.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">CineMax</div>
+                
+                <!-- Menu Hamburger para Mobile -->
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navegação -->
+                <nav>
+                    <ul id="mainMenu">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="cinema.html">Cinemas</a></li>
+                        <li><a href="relatorios.html">Relatórios</a></li>
+                        <li><a href="tickets.html" class="active">Tickets</a></li>
+                        <li><a href="login.html">Minha Conta</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- Overlay para fechar menu -->
+                <div class="menu-overlay" id="menuOverlay"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <section class="tickets-section">
+            <div class="section-header">
+                <h1>🎫 Meus Ingressos</h1>
+                <p class="subtitle">Visualize e gerencie seus ingressos de cinema</p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <input type="text" id="searchTicket" placeholder="🔍 Buscar por código, filme ou CPF..." class="search-input">
+                <select id="filterStatus" class="filter-select">
+                    <option value="all">Todos os Status</option>
+                    <option value="upcoming">Próximos</option>
+                    <option value="past">Anteriores</option>
+                </select>
+                <button class="btn-clear-filter" id="clearFilters">Limpar Filtros</button>
+            </div>
+
+            <!-- Grid de Tickets -->
+            <div class="tickets-grid" id="ticketsGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregando ingressos...</p>
+                </div>
+            </div>
+
+            <!-- Mensagem de vazio -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🎬</div>
+                <h2>Nenhum ingresso encontrado</h2>
+                <p>Você ainda não possui ingressos reservados.</p>
+                <a href="index.html" class="btn-primary">Comprar Ingressos</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Visualização do Ticket -->
+    <div class="modal-overlay" id="ticketModal">
+        <div class="modal-content ticket-modal-content">
+            <button class="modal-close" id="closeTicketModal">&times;</button>
+            <div id="ticketPreview">
+                <!-- O ticket será carregado aqui -->
+            </div>
+            <div class="ticket-modal-actions">
+                <button class="btn-action-modal" id="downloadTicketBtn">
+                    📥 Baixar Ingresso
+                </button>
+                <button class="btn-action-modal btn-print" id="printTicketBtn">
+                    🖨️ Imprimir
+                </button>
+                <button class="btn-action-modal btn-delete" id="deleteTicketBtn">
+                    🗑️ Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal-overlay" id="confirmDeleteModal">
+        <div class="modal-content confirm-modal-content">
+            <h3>⚠️ Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este ingresso?</p>
+            <p class="warning-text">Esta ação não pode ser desfeita.</p>
+            <div class="confirm-actions">
+                <button class="btn-cancel" id="cancelDeleteBtn">Cancelar</button>
+                <button class="btn-confirm-delete" id="confirmDeleteBtn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sobre Nós</h3>
+                    <p>O CineMax é a maior rede de cinemas do país, oferecendo a melhor experiência em entretenimento.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <p>Email: contato@cinemax.com</p>
+                    <p>Telefone: (11) 1234-5678</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=FFFFFF" alt="Facebook" class="social-icon">
+                        </a>
+                        <a href="https://instagram.com/guh_nunesx" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=FFFFFF" alt="Instagram" class="social-icon">
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-link">
+                            <img src="https://img.icons8.com/?size=100&id=5MQ0gPAYYx7a&format=png&color=FFFFFF" alt="Twitter" class="social-icon">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineMax. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

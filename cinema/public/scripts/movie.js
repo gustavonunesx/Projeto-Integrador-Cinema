@@ -132,6 +132,11 @@ function loadTrailer(trailerUrl) {
         }
         iframe.style.display = 'none'; // Garante que o iframe está escondido
     }
+    
+    // Atualizar datas
+    updateDateSelector();
+    
+    console.log(`[MOVIE] Dados exibidos - Origem: ${isFromBackend ? 'Backend' : 'Local'}`);
 }
 
 /**
@@ -673,13 +678,11 @@ async function handleCpfSubmit() {
 
     // Validação simples de CPF
     if (!cpf || cpf.length !== 11 || !/^\d+$/.test(cpf)) {
-        // Reutiliza o alerta customizado!
-        closeCpfModal(); // Fecha o modal de CPF
+        closeCpfModal();
         showCustomAlert("CPF inválido. Por favor, digite os 11 dígitos, apenas números.");
-        return; // Para a execução
+        return;
     }
 
-    // Fecha o modal de CPF
     closeCpfModal();
 
     console.log(`[MOVIE] Tentando reservar ${selectedSeats.length} assentos...`);
@@ -687,7 +690,6 @@ async function handleCpfSubmit() {
     let sucessos = [];
     let falhas = [];
     
-    // Mostra um "Carregando" no botão do modal de assentos
     const btnConfirm = document.querySelector('.btn-confirm-booking');
     btnConfirm.disabled = true;
     btnConfirm.textContent = 'Reservando...';
@@ -705,22 +707,189 @@ async function handleCpfSubmit() {
     btnConfirm.disabled = false;
     btnConfirm.textContent = 'Confirmar Reserva';
     
-    // Fecha o modal principal (de assentos)
     closeSeatModal();
 
-    // Exibe o resultado final com o alerta customizado
     if (falhas.length > 0) {
         showCustomAlert(`Houve um erro ao reservar os assentos: ${falhas.join(', ')}.\n\nReservados com sucesso: ${sucessos.join(', ')}`, "Erro na Reserva");
     } else {
-        showCustomAlert(`Reserva realizada com sucesso!
-Assentos: ${sucessos.join(', ')}
-Total: ${document.getElementById('summary-total').textContent}`, "Reserva Confirmada!");
+        // GERA O TICKET
+        const reservaData = {
+            assentos: sucessos,
+            cpf: cpf,
+            total: document.getElementById('summary-total').textContent
+        };
+        
+        const { html: ticketHTML, code: ticketCode } = generateTicket(reservaData);
+        
+        // MOSTRA MODAL DE SUCESSO COM OPÇÕES DE TICKET
+        showSuccessModalWithTicket(reservaData, ticketHTML, ticketCode);
     }
     
-    // Recarrega as sessões (para atualizar assentos disponíveis)
     const selectedDate = document.querySelector('.date-option.active').dataset.fullDate;
     await loadSessoes(currentMovie.id, selectedDate);
 }
+
+
+/**
+ * MODAL DE SUCESSO COM OPÇÕES DO TICKET
+ */
+function showSuccessModalWithTicket(reservaData, ticketHTML, ticketCode) {
+    const sessionInfo = JSON.parse(sessionStorage.getItem('selectedSession'));
+    
+    // SALVAR TICKET NO LOCALSTORAGE
+    saveTicketToStorage(reservaData, ticketCode, sessionInfo);
+    
+    const modalHTML = `
+        <div class="success-modal-content">
+            <div class="success-icon">✓</div>
+            <h3>Reserva Confirmada!</h3>
+            <div class="success-details">
+                <p><strong>Filme:</strong> ${sessionInfo.filmeTitulo}</p>
+                <p><strong>Horário:</strong> ${sessionInfo.horario}</p>
+                <p><strong>Assentos:</strong> ${reservaData.assentos.join(', ')}</p>
+                <p><strong>Total:</strong> ${reservaData.total}</p>
+                <p><strong>Código:</strong> ${ticketCode}</p>
+            </div>
+            <div class="ticket-actions">
+                <button class="btn-ticket" onclick="downloadCurrentTicket()">
+                    📥 Baixar Ingresso
+                </button>
+                <button class="btn-ticket btn-print" onclick="printCurrentTicket()">
+                    🖨️ Imprimir
+                </button>
+                <button class="btn-ticket btn-view-all" onclick="goToTicketsPage()">
+                    🎫 Ver Meus Ingressos
+                </button>
+            </div>
+            <button class="btn-confirm-booking" onclick="closeSuccessModal()">Fechar</button>
+        </div>
+    `;
+    
+    const alertModal = document.getElementById('alert-modal');
+    const alertContent = alertModal.querySelector('.alert-content');
+    
+    // Salva o ticket no sessionStorage temporariamente
+    sessionStorage.setItem('currentTicket', ticketHTML);
+    sessionStorage.setItem('currentTicketCode', ticketCode);
+    
+    alertContent.innerHTML = modalHTML;
+    alertModal.style.display = 'flex';
+}
+
+/**
+ * SALVAR TICKET NO LOCALSTORAGE
+ */
+function saveTicketToStorage(reservaData, ticketCode, sessionInfo) {
+    const hoje = new Date();
+    const dataCompra = hoje.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const ticket = {
+        code: ticketCode,
+        filmeTitulo: sessionInfo.filmeTitulo,
+        horario: sessionInfo.horario,
+        data: document.querySelector('.date-option.active .date').textContent,
+        assentos: reservaData.assentos,
+        total: reservaData.total,
+        cpf: reservaData.cpf,
+        dataCompra: dataCompra,
+        cinema: document.querySelector('.cinema-name').textContent,
+        sala: currentSessionDetails?.sessao?.sala?.nome || 'Sala 1',
+        timestamp: Date.now()
+    };
+    
+    // Recupera tickets existentes
+    let tickets = [];
+    const ticketsData = localStorage.getItem('cinemax_tickets');
+    
+    if (ticketsData) {
+        try {
+            tickets = JSON.parse(ticketsData);
+        } catch (error) {
+            console.error('[TICKET] Erro ao recuperar tickets:', error);
+            tickets = [];
+        }
+    }
+    
+    // Adiciona novo ticket
+    tickets.push(ticket);
+    
+    // Salva de volta no localStorage
+    localStorage.setItem('cinemax_tickets', JSON.stringify(tickets));
+    console.log('[TICKET] Ingresso salvo com sucesso:', ticketCode);
+}
+
+/**
+ * REDIRECIONAR PARA PÁGINA DE TICKETS
+ */
+function goToTicketsPage() {
+    window.location.href = 'tickets.html';
+}
+
+/**
+ * FUNÇÕES AUXILIARES PARA OS BOTÕES DO TICKET
+ */
+/**
+ * FUNÇÕES AUXILIARES PARA OS BOTÕES DO TICKET
+ */
+function downloadCurrentTicket() {
+    const ticketHTML = sessionStorage.getItem('currentTicket');
+    const ticketCode = sessionStorage.getItem('currentTicketCode');
+    const sessionInfo = JSON.parse(sessionStorage.getItem('selectedSession'));
+    
+    const fileName = `ingresso-${sessionInfo.filmeTitulo.replace(/\s+/g, '-')}-${ticketCode}.html`;
+    downloadTicket(ticketHTML, fileName);
+}
+
+function printCurrentTicket() {
+    const ticketHTML = sessionStorage.getItem('currentTicket');
+    printTicket(ticketHTML);
+}
+
+function closeSuccessModal() {
+    const alertModal = document.getElementById('alert-modal');
+    alertModal.style.display = 'none';
+    
+    // Limpa os dados temporários
+    sessionStorage.removeItem('currentTicket');
+    sessionStorage.removeItem('currentTicketCode');
+    
+    // Restaura o conteúdo original do modal de alerta
+    const alertContent = alertModal.querySelector('.alert-content');
+    alertContent.innerHTML = `
+        <h3 id="alert-title">Atenção</h3>
+        <p id="alert-message">Mensagem de alerta aqui.</p>
+        <button class="btn-confirm-booking" onclick="closeCustomAlert()">OK</button>
+    `;
+}
+
+function printCurrentTicket() {
+    const ticketHTML = sessionStorage.getItem('currentTicket');
+    printTicket(ticketHTML);
+}
+
+function closeSuccessModal() {
+    const alertModal = document.getElementById('alert-modal');
+    alertModal.style.display = 'none';
+    
+    // Limpa os dados temporários
+    sessionStorage.removeItem('currentTicket');
+    sessionStorage.removeItem('currentTicketCode');
+    
+    // Restaura o conteúdo original do modal de alerta
+    const alertContent = alertModal.querySelector('.alert-content');
+    alertContent.innerHTML = `
+        <h3 id="alert-title">Atenção</h3>
+        <p id="alert-message">Mensagem de alerta aqui.</p>
+        <button class="btn-confirm-booking" onclick="closeCustomAlert()">OK</button>
+    `;
+}
+
 
 // Controle do menu mobile
 document.addEventListener('DOMContentLoaded', function() {
@@ -871,6 +1040,358 @@ class ShareSystem {
         }
     }
 }
+
+/**
+ * GERA O TICKET EM HTML E PERMITE DOWNLOAD
+ */
+function generateTicket(reservaData) {
+    const sessionInfo = JSON.parse(sessionStorage.getItem('selectedSession'));
+    const hoje = new Date();
+    const dataCompra = hoje.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Gera um código único para o ticket
+    const ticketCode = `TKT${Date.now().toString().slice(-8)}`;
+    
+    const ticketHTML = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket - ${sessionInfo.filmeTitulo}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .ticket-container {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border: 3px dashed #333;
+            border-radius: 8px;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .ticket-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #e50914 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .ticket-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+        
+        .ticket-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .ticket-body {
+            padding: 25px;
+        }
+        
+        .ticket-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .ticket-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .ticket-section h2 {
+            font-size: 14px;
+            color: #e50914;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .ticket-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .ticket-info strong {
+            color: #333;
+        }
+        
+        .ticket-info span {
+            color: #666;
+            text-align: right;
+        }
+        
+        .seats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .seat-tag {
+            background: #e50914;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .ticket-code {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .ticket-code .code {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ticket-code .label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .barcode {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .barcode svg {
+            width: 100%;
+            max-width: 250px;
+            height: 60px;
+        }
+        
+        .ticket-footer {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .total-price {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .total-price .label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .total-price .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .ticket-container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket-container">
+        <div class="ticket-header">
+            <h1>🎬 CINEMAX</h1>
+            <p>Ingresso de Cinema</p>
+        </div>
+        
+        <div class="ticket-body">
+            <div class="ticket-section">
+                <h2>📽️ Filme</h2>
+                <div class="ticket-info">
+                    <strong>Título:</strong>
+                    <span>${sessionInfo.filmeTitulo}</span>
+                </div>
+                <div class="ticket-info">
+                    <strong>Sessão:</strong>
+                    <span>${sessionInfo.horario}</span>
+                </div>
+                <div class="ticket-info">
+                    <strong>Data:</strong>
+                    <span>${document.querySelector('.date-option.active .date').textContent}</span>
+                </div>
+            </div>
+            
+            <div class="ticket-section">
+                <h2>🎭 Sala e Assentos</h2>
+                <div class="ticket-info">
+                    <strong>Cinema:</strong>
+                    <span>${document.querySelector('.cinema-name').textContent}</span>
+                </div>
+                <div class="ticket-info">
+                    <strong>Sala:</strong>
+                    <span>Sala ${currentSessionDetails?.sessao?.sala?.nome || '1'}</span>
+                </div>
+                <div class="ticket-info">
+                    <strong>Quantidade:</strong>
+                    <span>${reservaData.assentos.length} ingresso(s)</span>
+                </div>
+                <div class="seats-grid">
+                    ${reservaData.assentos.map(seat => `<span class="seat-tag">${seat}</span>`).join('')}
+                </div>
+            </div>
+            
+            <div class="ticket-section">
+                <h2>💳 Pagamento</h2>
+                <div class="ticket-info">
+                    <strong>CPF:</strong>
+                    <span>${reservaData.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</span>
+                </div>
+                <div class="ticket-info">
+                    <strong>Data da Compra:</strong>
+                    <span>${dataCompra}</span>
+                </div>
+                <div class="total-price">
+                    <div class="label">TOTAL PAGO</div>
+                    <div class="value">${reservaData.total}</div>
+                </div>
+            </div>
+            
+            <div class="ticket-code">
+                <div class="label">CÓDIGO DO INGRESSO</div>
+                <div class="code">${ticketCode}</div>
+            </div>
+            
+            <div class="barcode">
+                <svg viewBox="0 0 200 60">
+                    ${generateBarcodeSVG(ticketCode)}
+                </svg>
+            </div>
+        </div>
+        
+        <div class="ticket-footer">
+            <p><strong>IMPORTANTE:</strong> Apresente este ingresso na entrada da sala.</p>
+            <p>Chegue com 15 minutos de antecedência.</p>
+            <p>© 2023 CineMax - Todos os direitos reservados</p>
+        </div>
+    </div>
+</body>
+</html>
+    `;
+    
+    return { html: ticketHTML, code: ticketCode };
+}
+
+
+/**
+ * GERA UM CÓDIGO DE BARRAS SVG SIMPLES
+ */
+function generateBarcodeSVG(code) {
+    // Converte o código em uma sequência de barras (simulação simplificada)
+    let bars = '';
+    let x = 0;
+    const width = 3;
+    
+    // Para cada caractere, cria uma sequência de barras baseada no código ASCII
+    for (let i = 0; i < code.length; i++) {
+        const charCode = code.charCodeAt(i) % 2; // Alterna entre preto e branco
+        
+        if (charCode === 1) {
+            bars += `<rect x="${x}" y="0" width="${width}" height="60" fill="#000"/>`;
+        }
+        x += width;
+        
+        // Adiciona espaço
+        x += width * 0.5;
+    }
+    
+    // Adiciona barras aleatórias extras para parecer mais realista
+    for (let i = 0; i < 20; i++) {
+        const shouldDraw = Math.random() > 0.5;
+        if (shouldDraw) {
+            bars += `<rect x="${x}" y="0" width="${width}" height="60" fill="#000"/>`;
+        }
+        x += width + 1;
+    }
+    
+    return bars;
+}
+
+/**
+ * FAZ O DOWNLOAD DO TICKET COMO HTML
+ */
+function downloadTicket(ticketHTML, fileName) {
+    const blob = new Blob([ticketHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+
+/**
+ * ABRE O TICKET EM NOVA ABA PARA IMPRESSÃO
+ */
+function printTicket(ticketHTML) {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(ticketHTML);
+    printWindow.document.close();
+    
+    // Aguarda o carregamento e abre o diálogo de impressão
+    printWindow.onload = function() {
+        setTimeout(() => {
+            printWindow.print();
+        }, 250);
+    };
+}
+
 
 // Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
