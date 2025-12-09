@@ -4,6 +4,7 @@ import { getFilmeById } from '../services/filmeService';
 import { getSessoesPorFilme } from '../services/sessaoService';
 import { Calendar, Clock, MapPin, Tag, Star } from 'lucide-react';
 import { format } from 'date-fns';
+import { getImageUrl } from '../utils/imageUtils';
 
 const FilmeDetalhes = () => {
   const { id } = useParams();
@@ -29,9 +30,14 @@ const FilmeDetalhes = () => {
       <div className="relative h-[60vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-cinema-dark via-cinema-dark/80 to-transparent z-10" />
         <img
-          src={filme.bannerUrl || filme.posterUrl}
+          src={getImageUrl(filme.bannerUrl || filme.posterUrl)}
           alt={filme.titulo}
           className="w-full h-full object-cover object-top blur-sm"
+          onError={(e) => {
+             if (filme.posterUrl && e.target.src !== getImageUrl(filme.posterUrl)) {
+                 e.target.src = getImageUrl(filme.posterUrl);
+             }
+          }}
         />
       </div>
 
@@ -40,7 +46,7 @@ const FilmeDetalhes = () => {
           {/* Poster */}
           <div className="flex-shrink-0 w-64 md:w-80 mx-auto md:mx-0">
             <img
-              src={filme.posterUrl}
+              src={getImageUrl(filme.posterUrl)}
               alt={filme.titulo}
               className="w-full rounded-xl shadow-2xl border-4 border-white/10"
             />

@@ -19,28 +19,29 @@ const Sessao = () => {
   const loadAssentos = async () => {
     try {
       const data = await getAssentosSessao(id);
-      // The backend returns a map of seat number -> boolean (true if available, false if taken)
-      // We need to transform this into an array for rendering
-      // Assuming seats are somewhat sequential or we can just iterate the keys
-      // Actually, let's see what the backend returns.
-      // Based on SessaoController: ResponseEntity.ok(sessaoService.getAssentosSessao(id));
-      // I don't see the SessaoService implementation, but usually it might return a Map<String, Boolean> or List<AssentoDTO>
-      // Let's assume Map<String, Boolean> based on common patterns, where key is seat number and value is availability.
-      // If it is a list of objects, we will adjust.
-      // Wait, let's check SessaoService if possible, or just print data to console in development.
-      // For now, I'll assume it returns an object/map where keys are seat numbers and values are boolean (true=available).
-      const seatsArray = Object.entries(data).map(([numero, disponivel]) => ({
-        numero,
-        disponivel
-      })).sort((a, b) => {
-          // simple sort for now, maybe alphanumeric later
-          return a.numero.localeCompare(b.numero, undefined, { numeric: true });
+
+      // Transform map to array with row/col info
+      const seatsArray = Object.entries(data).map(([numero, disponivel]) => {
+        const row = numero.charAt(0);
+        const col = parseInt(numero.substring(1));
+        return {
+          numero,
+          disponivel,
+          row,
+          col
+        };
+      }).sort((a, b) => {
+          if (a.row === b.row) return a.col - b.col;
+          return a.row.localeCompare(b.row);
       });
       setAssentos(seatsArray);
     } catch (error) {
       console.error(error);
     }
   };
+
+  // Group seats by row
+  const rows = [...new Set(assentos.map(s => s.row))].sort();
 
   const handleBooking = async (e) => {
     e.preventDefault();
@@ -77,24 +78,31 @@ const Sessao = () => {
 
       {/* Seats Grid */}
       <div className="flex justify-center mb-12 overflow-x-auto">
-        <div className="grid grid-cols-10 gap-3 min-w-[300px]">
-          {assentos.map((seat) => (
-            <button
-              key={seat.numero}
-              disabled={!seat.disponivel}
-              onClick={() => setSelectedSeat(seat.numero)}
-              className={`
-                w-10 h-10 rounded-t-lg text-xs font-bold transition-all duration-200
-                ${!seat.disponivel
-                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent'
-                  : selectedSeat === seat.numero
-                    ? 'bg-cinema-neon text-cinema-black shadow-[0_0_15px_rgba(0,247,255,0.6)] transform scale-110'
-                    : 'bg-white/10 hover:bg-white/30 border border-white/20'
-                }
-              `}
-            >
-              {seat.numero}
-            </button>
+        <div className="flex flex-col gap-3 min-w-[300px]">
+          {rows.map(rowLetter => (
+            <div key={rowLetter} className="flex justify-center gap-3 items-center">
+              <span className="w-6 text-gray-500 text-sm font-bold">{rowLetter}</span>
+              {assentos.filter(s => s.row === rowLetter).map((seat) => (
+                <button
+                  key={seat.numero}
+                  disabled={!seat.disponivel}
+                  onClick={() => setSelectedSeat(seat.numero)}
+                  className={`
+                    w-10 h-10 rounded-t-lg text-xs font-bold transition-all duration-200
+                    ${!seat.disponivel
+                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent'
+                      : selectedSeat === seat.numero
+                        ? 'bg-cinema-neon text-cinema-black shadow-[0_0_15px_rgba(0,247,255,0.6)] transform scale-110'
+                        : 'bg-white/10 hover:bg-white/30 border border-white/20'
+                    }
+                  `}
+                  title={`Assento ${seat.numero}`}
+                >
+                  {seat.col}
+                </button>
+              ))}
+               <span className="w-6 text-gray-500 text-sm font-bold text-right">{rowLetter}</span>
+            </div>
           ))}
         </div>
       </div>
