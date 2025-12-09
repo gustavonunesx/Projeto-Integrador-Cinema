@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getFilmesEmCartaz } from '../services/filmeService';
 import { Link } from 'react-router-dom';
 import { Play } from 'lucide-react';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Home = () => {
   const [filmes, setFilmes] = useState([]);
@@ -19,9 +20,14 @@ const Home = () => {
         <div className="relative h-[80vh] w-full overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-cinema-dark via-cinema-dark/50 to-transparent z-10" />
           <img
-            src={featuredMovie.bannerUrl || featuredMovie.posterUrl}
+            src={getImageUrl(featuredMovie.bannerUrl || featuredMovie.posterUrl)}
             alt={featuredMovie.titulo}
             className="w-full h-full object-cover object-center"
+            onError={(e) => {
+              if (featuredMovie.posterUrl && e.target.src !== getImageUrl(featuredMovie.posterUrl)) {
+                 e.target.src = getImageUrl(featuredMovie.posterUrl);
+              }
+            }}
           />
           <div className="absolute bottom-0 left-0 z-20 w-full p-8 md:p-16">
             <div className="max-w-4xl">
@@ -60,7 +66,7 @@ const Home = () => {
           {filmes.map(filme => (
             <Link key={filme.id} to={`/filme/${filme.id}`} className="group relative rounded-xl overflow-hidden aspect-[2/3] bg-gray-800">
               <img
-                src={filme.posterUrl}
+                src={getImageUrl(filme.posterUrl)}
                 alt={filme.titulo}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />

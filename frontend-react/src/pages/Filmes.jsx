@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getFilmes, searchFilmes } from '../services/filmeService';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Filmes = () => {
   const [filmes, setFilmes] = useState([]);
@@ -54,7 +55,7 @@ const Filmes = () => {
         {filmes.map(filme => (
           <Link key={filme.id} to={`/filme/${filme.id}`} className="group relative rounded-xl overflow-hidden aspect-[2/3] bg-gray-800 border border-white/5 hover:border-cinema-neon/50 transition-all duration-300">
             <img
-              src={filme.posterUrl}
+              src={getImageUrl(filme.posterUrl)}
               alt={filme.titulo}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
