@@ -12,10 +12,6 @@ const Sessao = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    loadAssentos();
-  }, [id]);
-
   const loadAssentos = async () => {
     try {
       const data = await getAssentosSessao(id);
@@ -40,6 +36,11 @@ const Sessao = () => {
     }
   };
 
+  useEffect(() => {
+    loadAssentos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   // Group seats by row
   const rows = [...new Set(assentos.map(s => s.row))].sort();
 
@@ -57,7 +58,7 @@ const Sessao = () => {
       setTimeout(() => {
           navigate('/');
       }, 2000);
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro ao realizar reserva. Tente novamente.' });
     } finally {
       setLoading(false);
@@ -78,47 +79,49 @@ const Sessao = () => {
 
       {/* Seats Grid */}
       <div className="flex justify-center mb-12 overflow-x-auto">
-        <div className="flex flex-col gap-3 min-w-[300px]">
-          {rows.map(rowLetter => (
-            <div key={rowLetter} className="flex justify-center gap-3 items-center">
-              <span className="w-6 text-gray-500 text-sm font-bold">{rowLetter}</span>
-              {assentos.filter(s => s.row === rowLetter).map((seat) => (
-                <button
-                  key={seat.numero}
-                  disabled={!seat.disponivel}
-                  onClick={() => setSelectedSeat(seat.numero)}
-                  className={`
-                    w-10 h-10 rounded-t-lg text-xs font-bold transition-all duration-200
-                    ${!seat.disponivel
-                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent'
-                      : selectedSeat === seat.numero
-                        ? 'bg-cinema-neon text-cinema-black shadow-[0_0_15px_rgba(0,247,255,0.6)] transform scale-110'
-                        : 'bg-white/10 hover:bg-white/30 border border-white/20'
-                    }
-                  `}
-                  title={`Assento ${seat.numero}`}
-                >
-                  {seat.col}
-                </button>
-              ))}
-               <span className="w-6 text-gray-500 text-sm font-bold text-right">{rowLetter}</span>
-            </div>
-          ))}
+        <div className="bg-[#0c0c0c] p-8 rounded-lg border border-white/10 shadow-2xl min-w-fit">
+          <div className="flex flex-col gap-2">
+            {rows.map(rowLetter => (
+              <div key={rowLetter} className="flex justify-center gap-2 items-center">
+                <span className="w-4 text-gray-500 text-[10px] font-bold">{rowLetter}</span>
+                {assentos.filter(s => s.row === rowLetter).map((seat) => (
+                  <button
+                    key={seat.numero}
+                    disabled={!seat.disponivel}
+                    onClick={() => setSelectedSeat(seat.numero)}
+                    className={`
+                      w-8 h-8 rounded text-[9px] font-bold transition-all duration-200 flex items-center justify-center
+                      ${!seat.disponivel
+                        ? 'bg-[#e50914] opacity-70 cursor-not-allowed'
+                        : selectedSeat === seat.numero
+                          ? 'bg-[#4CAF50] scale-110 text-white shadow-[0_0_10px_rgba(76,175,80,0.6)]'
+                          : 'bg-[#444] text-[#111] hover:bg-[#666] hover:scale-110'
+                      }
+                    `}
+                    title={`Assento ${seat.numero}`}
+                  >
+                    {seat.col}
+                  </button>
+                ))}
+                 <span className="w-4 text-gray-500 text-[10px] font-bold text-right">{rowLetter}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Legend */}
       <div className="flex justify-center gap-6 mb-12 text-sm">
         <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-white/10 border border-white/20 rounded-t-sm"></div>
+            <div className="w-4 h-4 bg-[#444] rounded"></div>
             <span className="text-gray-400">Disponível</span>
         </div>
         <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-cinema-neon rounded-t-sm"></div>
+            <div className="w-4 h-4 bg-[#4CAF50] rounded"></div>
             <span className="text-gray-400">Selecionado</span>
         </div>
         <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gray-700 rounded-t-sm"></div>
+            <div className="w-4 h-4 bg-[#e50914] opacity-70 rounded"></div>
             <span className="text-gray-400">Ocupado</span>
         </div>
       </div>
