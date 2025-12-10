@@ -118,7 +118,7 @@ const Home = () => {
               alt={currentMovie.titulo}
               className="w-full h-full object-cover object-center transition-transform ease-linear"
               style={{
-                transform: imageLoaded ? 'scale(1.20)' : 'scale(1)',
+                transform: imageLoaded ? 'scale(1.15)' : 'scale(1)',
                 transitionDuration: '5000ms' // Zoom suave durante 5 segundos
               }}
               onLoad={() => setImageLoaded(true)}
