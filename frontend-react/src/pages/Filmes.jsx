@@ -9,17 +9,8 @@ const Filmes = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    loadFilmes();
+    getFilmes().then(setFilmes).catch(console.error);
   }, []);
-
-  const loadFilmes = async () => {
-    try {
-      const data = await getFilmes();
-      setFilmes(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -31,7 +22,7 @@ const Filmes = () => {
         console.error(error);
       }
     } else {
-      loadFilmes();
+      getFilmes().then(setFilmes).catch(console.error);
     }
   };
 

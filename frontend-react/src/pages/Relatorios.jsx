@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getDashboard, getFilmesMaisVendidos, getHorariosMaisMovimentados } from '../services/analyticsService';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
 import { TrendingUp, Users, DollarSign, Clock } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 
 const Relatorios = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -12,11 +12,6 @@ const Relatorios = () => {
     inicio: subDays(new Date(), 30).toISOString().split('T')[0],
     fim: new Date().toISOString().split('T')[0]
   });
-
-  useEffect(() => {
-    loadDashboard();
-    loadCharts();
-  }, [dateRange]);
 
   const loadDashboard = async () => {
     try {
@@ -41,6 +36,12 @@ const Relatorios = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    loadDashboard();
+    loadCharts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateRange]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">

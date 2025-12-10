@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getFilmeById } from '../services/filmeService';
 import { getSessoesPorFilme } from '../services/sessaoService';
-import { Calendar, Clock, MapPin, Tag, Star } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar, Clock, MapPin, Tag, Star, PlayCircle } from 'lucide-react';
+import { format, addDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { getImageUrl } from '../utils/imageUtils';
 
 const FilmeDetalhes = () => {
@@ -23,6 +24,17 @@ const FilmeDetalhes = () => {
   }, [id, filme, selectedDate]);
 
   if (!filme) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cinema-neon"></div></div>;
+
+  // Custom Date Selector
+  const dates = Array.from({ length: 5 }, (_, i) => {
+    const date = addDays(new Date(), i);
+    const dateString = date.toISOString().split('T')[0];
+    return {
+      value: dateString,
+      label: i === 0 ? 'HOJE' : i === 1 ? 'AMANHÃ' : format(date, 'EEE', { locale: ptBR }).toUpperCase(),
+      dateFormatted: format(date, 'dd/MM')
+    };
+  });
 
   return (
     <div>
@@ -63,6 +75,25 @@ const FilmeDetalhes = () => {
 
             <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-3xl">{filme.descricao}</p>
 
+            {/* Trailer Section */}
+            {filme.trailerUrl && (
+              <div className="mb-12">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <PlayCircle className="text-cinema-neon" />
+                  Trailer
+                </h3>
+                <div className="aspect-video w-full rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black">
+                  <iframe
+                    src={filme.trailerUrl.replace('watch?v=', 'embed/')}
+                    title="Trailer"
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
              {/* Sessions */}
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10">
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -70,14 +101,24 @@ const FilmeDetalhes = () => {
                 Sessões Disponíveis
               </h3>
 
-              <div className="mb-6">
-                <label className="block text-sm text-gray-400 mb-2">Escolha a data:</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="bg-black/40 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cinema-neon"
-                />
+              {/* Custom Date Selector */}
+              <div className="mb-8 flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                {dates.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => setSelectedDate(item.value)}
+                    className={`
+                      flex flex-col items-center justify-center min-w-[90px] p-3 rounded-lg border transition-all duration-300
+                      ${selectedDate === item.value
+                        ? 'bg-cinema-red border-cinema-red text-white shadow-lg scale-105'
+                        : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
+                      }
+                    `}
+                  >
+                    <span className="text-xs font-bold mb-1">{item.label}</span>
+                    <span className="text-sm">{item.dateFormatted}</span>
+                  </button>
+                ))}
               </div>
 
               {sessoes.length > 0 ? (
