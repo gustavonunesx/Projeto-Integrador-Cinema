@@ -20,7 +20,7 @@ INSERT INTO filmes (id, titulo, duracao, genero, classificacao, descricao, poste
 
 ('bad-boys-4', 'Bad Boys 4', '2h 15min', 'Ação, Comédia', '16 anos',
 'Mike Lowrey e Marcus Burnett estão de volta em mais uma missão repleta de ação e comédia.',
-'../images/badboys4.webp', '../images/badboys4-banner.jpg', 'https://www.youtube.com/watch?v=d7uEO2TsePk', TRUE),
+'../images/badboys4.jpg', '../images/badboys-banner.jpg', 'https://www.youtube.com/watch?v=d7uEO2TsePk', TRUE),
 
 ('the-fall-guy', 'O Dublê', '2h 05min', 'Ação, Comédia', '12 anos',
 'Um dublê aposentado é forçado a voltar à ativa quando o astro de um grande filme desaparece misteriosamente.',
