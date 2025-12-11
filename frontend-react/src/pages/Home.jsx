@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getFilmesEmCartaz } from '../services/filmeService';
 import { Link } from 'react-router-dom';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -9,6 +9,7 @@ const Home = () => {
   const [filmes, setFilmes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Carrega os filmes do backend
   useEffect(() => {
     getFilmesEmCartaz().then(setFilmes).catch(console.error);
   }, []);

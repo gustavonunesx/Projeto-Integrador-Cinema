@@ -1,7 +1,6 @@
 create database cinema_db;
 use cinema_db;
 
-
 -- ================================================
 -- 3. POPULAR FILMES
 -- ================================================
@@ -13,7 +12,7 @@ INSERT INTO filmes (id, titulo, duracao, genero, classificacao, descricao, poste
 
 ('deadpool-3', 'Deadpool & Wolverine', '2h 07min', 'Ação, Comédia', '16 anos',
 'Wolverine está se recuperando quando cruza com o irreverente Deadpool. Juntos, eles formam uma equipe para enfrentar um inimigo comum.',
-'../images/Deadpool_&_Wolverine_cartaz.jpg', '../images/deadpool-banner.jpg', 'https://www.youtube.com/watch?v=73_1biulkYk', TRUE),
+'../images/Deadpool_&_Wolverine_cartaz.jpg', '../images/deadpool+e+wolverine+capa.webp', 'https://www.youtube.com/watch?v=73_1biulkYk', TRUE),
 
 ('inside-out-2', 'Divertidamente 2', '1h 40min', 'Animação, Comédia', 'Livre',
 'Riley está se adaptando à vida na adolescência quando novas emoções chegam ao quartel-general. Agora, Alegria, Tristeza, Raiva, Medo e Nojinho precisam aprender a lidar com essas novas companheiras.',
@@ -21,7 +20,7 @@ INSERT INTO filmes (id, titulo, duracao, genero, classificacao, descricao, poste
 
 ('bad-boys-4', 'Bad Boys 4', '2h 15min', 'Ação, Comédia', '16 anos',
 'Mike Lowrey e Marcus Burnett estão de volta em mais uma missão repleta de ação e comédia.',
-'../images/badboys4.webp', '../images/badboys4-banner.jpg', 'https://www.youtube.com/watch?v=d7uEO2TsePk', TRUE),
+'../images/badboys4.jpg', '../images/badboys-banner.jpg', 'https://www.youtube.com/watch?v=d7uEO2TsePk', TRUE),
 
 ('the-fall-guy', 'O Dublê', '2h 05min', 'Ação, Comédia', '12 anos',
 'Um dublê aposentado é forçado a voltar à ativa quando o astro de um grande filme desaparece misteriosamente.',
@@ -45,7 +44,7 @@ INSERT INTO filmes (id, titulo, duracao, genero, classificacao, descricao, poste
 
 ('barbie', 'Barbie', '1h 54min', 'Comédia, Fantasia, Aventura', '12 anos',
 'Barbie vive em Barbieland, um mundo perfeito onde todos os Barbies e Kens passam os dias em festas e alegria. No entanto, quando ela começa a ter pensamentos sobre a morte e percebe que algo está errado, precisa viajar para o mundo real.',
-'../images/barbie-capa.jpg', '../images/barbie-banner.jpg', 'https://www.youtube.com/embed/pBk4NYhWNMM', TRUE);
+'../images/barbie-capa.jpg', '../images/barbie-banner.png', 'https://www.youtube.com/embed/pBk4NYhWNMM', TRUE);
 
 UPDATE filmes SET em_cartaz = FALSE WHERE id = 'kingdom-of-the-planet-of-the-apes';
 UPDATE filmes SET em_cartaz = FALSE WHERE id = 'inside-out-2';
