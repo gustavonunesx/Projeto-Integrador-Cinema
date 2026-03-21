@@ -14,7 +14,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Copiar JAR compilado
+# Copiar JAR compilados
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
