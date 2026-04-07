@@ -43,10 +43,10 @@ public class Sessao {
     @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;
 
-    @Column(nullable = false)
+    @Column(name = "data_sessao",nullable = false)
     private LocalDate dataSessao;
 
-    @Column(name= "data_sessao",nullable = false)
+    @Column(name= "horario",nullable = false)
     private LocalTime horario;
 
     @Column(name = "tipo_exibicao")
