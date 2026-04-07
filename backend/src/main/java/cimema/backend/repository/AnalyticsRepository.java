@@ -1,15 +1,16 @@
 package cimema.backend.repository;
 
-import cimema.backend.dto.FilmePopularDTO;
-import cimema.backend.dto.HorarioMovimentoDTO;
-import cimema.backend.model.Reserva;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import cimema.backend.dto.FilmePopularDTO;
+import cimema.backend.dto.HorarioMovimentoDTO;
+import cimema.backend.model.Reserva;
 
 @Repository
 public interface AnalyticsRepository extends JpaRepository<Reserva, Long> {
@@ -45,12 +46,12 @@ public interface AnalyticsRepository extends JpaRepository<Reserva, Long> {
      * Busca os dias da semana mais movimentados em um período
      * Retorna o nome do dia e o total de reservas
      */
-    @Query("SELECT DAYNAME(s.dataSessao) as dia, COUNT(r.id) as total " +
-            "FROM Reserva r " +
-            "JOIN r.sessao s " +
-            "WHERE s.dataSessao BETWEEN :startDate AND :endDate " +
-            "GROUP BY DAYNAME(s.dataSessao) " +
-            "ORDER BY COUNT(r.id) DESC")
+    @Query(value ="SELECT DAYNAME(s.data_sessao) as dia, COUNT(r.id) as total " +
+        "FROM reservas r " +
+        "JOIN sessoes s ON r.sessao_id = s.id " +
+        "WHERE s.data_sessao BETWEEN :startDate AND :endDate " +
+        "GROUP BY DAYNAME(s.data_sessao) " +
+        "ORDER BY COUNT(r.id) DESC", nativeQuery = true)
     List<Object[]> findDiasMaisMovimentados(@Param("startDate") LocalDate startDate,
                                             @Param("endDate") LocalDate endDate);
 }
