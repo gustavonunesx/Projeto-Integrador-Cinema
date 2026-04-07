@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -41,8 +41,13 @@ public class Filme {
     @Column(columnDefinition = "TEXT")
     private String descricao;
     
+    @Column(name = "poster_url")
     private String posterUrl;
+
+    @Column(name = "banner_url")
     private String bannerUrl;
+
+    @Column(name = "trailer_url")
     private String trailerUrl;
     
     @Column(nullable = false)
