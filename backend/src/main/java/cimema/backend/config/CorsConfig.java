@@ -14,12 +14,9 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                            "http://localhost:5173",
-                            "https://cinema-project-e14xeuvrd-gustavonunesxs-projects.vercel.app"
-                        )
-                        .allowedMethods("*")
-                        .allowedHeaders("*");
+                .allowedOriginPatterns("*")
+                .allowedMethods("*")
+                .allowedHeaders("*");
             }
         };
     }
