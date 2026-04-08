@@ -3,6 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getAssentosSessao, reservarAssento } from '../services/sessaoService';
 import { Monitor, Check } from 'lucide-react';
 
+const formatCPF = (value) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+};
+
 const Sessao = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -88,7 +96,7 @@ const Sessao = () => {
       // ALTERAÇÃO 4: Itera sobre selectedSeats para reservar cada um
       for (const assento of selectedSeats) {
         // Chama a API de reserva para cada assento selecionado
-        await reservarAssento(id, assento, cpf);
+        await reservarAssento(id, assento, cpf.replace(/\D/g, ''));
       }
       
       // Se todas as reservas forem bem-sucedidas
@@ -137,86 +145,89 @@ const Sessao = () => {
       )}
 
       {/* Screen */}
-      <div className="mb-12">
-        <div className="w-full h-2 bg-cinema-neon shadow-[0_0_20px_rgba(0,247,255,0.5)] rounded-full mb-4 mx-auto max-w-2xl"></div>
-        <p className="text-center text-gray-500 text-sm flex items-center justify-center gap-2">
-            <Monitor className="w-4 h-4"/> TELA
+      <div className="mb-8">
+        <div
+          className="mx-auto mb-3 h-[3px] rounded-full bg-cinema-neon shadow-[0_0_18px_rgba(0,247,255,0.55)]"
+          style={{ width: 'min(90%, 480px)' }}
+        />
+        <p className="text-center text-gray-500 text-xs flex items-center justify-center gap-1 tracking-widest uppercase">
+          <Monitor className="w-3 h-3" /> Tela
         </p>
       </div>
 
       {/* Seats Grid */}
-      <div className="flex justify-center mb-12 overflow-x-auto">
-        <div className="bg-[#0c0c0c] p-8 rounded-lg border border-white/10 shadow-2xl min-w-fit">
-          <div className="flex flex-col gap-2">
-            {rows.map(rowLetter => (
-              <div 
-                key={rowLetter} 
-                className="flex justify-center gap-2 items-center"
-                style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: `auto repeat(${maxCol}, 1fr) auto`, 
-                    gap: '8px'
-                }}
-              >
-                {/* Indicador de Linha Esquerda */}
-                <span className="text-gray-500 text-[10px] font-bold self-center justify-self-end">{rowLetter}</span>
-                
-                {/* Renderização dos Assentos da Linha */}
-                {Array.from({ length: maxCol }, (_, colIndex) => {
+      <div className="mb-8 overflow-x-auto pb-2 -mx-4 px-4">
+        {/* scroll hint on small screens */}
+        <p className="text-center text-gray-600 text-[10px] mb-2 sm:hidden">← deslize para ver todos os assentos →</p>
+        <div className="flex justify-center">
+          <div className="bg-[#0c0c0c] p-3 sm:p-6 rounded-xl border border-white/10 shadow-2xl min-w-fit">
+            <div className="flex flex-col gap-1 sm:gap-2">
+              {rows.map(rowLetter => (
+                <div
+                  key={rowLetter}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `16px repeat(${maxCol}, 1fr) 16px`,
+                    gap: '4px',
+                  }}
+                  className="sm:[gap:6px]"
+                >
+                  {/* Label esquerda */}
+                  <span className="text-gray-600 text-[9px] font-bold self-center text-right pr-0.5">{rowLetter}</span>
+
+                  {Array.from({ length: maxCol }, (_, colIndex) => {
                     const colNum = colIndex + 1;
                     const seat = assentos.find(s => s.row === rowLetter && s.col === colNum);
-                    
+
                     if (seat) {
-                        const isSelected = selectedSeats.includes(seat.numeroAssento);
-                        
-                        // Renderiza o botão do assento real
-                        return (
-                            <button
-                                key={seat.id}
-                                disabled={seat.status !== 'DISPONIVEL'} 
-                                // ALTERAÇÃO 6: Chamar a nova função de toggle
-                                onClick={() => toggleSeatSelection(seat.numeroAssento)}
-                                className={`
-                                    w-8 h-8 rounded text-[9px] font-bold transition-all duration-200 flex items-center justify-center
-                                    ${seat.status !== 'DISPONIVEL'
-                                        ? 'bg-[#e50914] opacity-70 cursor-not-allowed'
-                                        // ALTERAÇÃO 7: Verificar se está no array de selectedSeats
-                                        : isSelected
-                                            ? 'bg-[#4CAF50] scale-110 text-white shadow-[0_0_10px_rgba(76,175,80,0.6)]'
-                                            : 'bg-[#444] text-[#111] hover:bg-[#666] hover:scale-110'
-                                    }
-                                `}
-                                title={`Assento ${seat.numeroAssento}`}
-                            >
-                                {seat.col}
-                            </button>
-                        );
-                    } else {
-                        // Renderiza um espaço vazio se não houver assento nesta posição
-                        return <div key={`${rowLetter}-${colNum}-empty`} className="w-8 h-8 opacity-0 pointer-events-none"></div>;
+                      const isSelected = selectedSeats.includes(seat.numeroAssento);
+                      const isUnavailable = seat.status !== 'DISPONIVEL';
+                      return (
+                        <button
+                          key={seat.id}
+                          disabled={isUnavailable}
+                          onClick={() => toggleSeatSelection(seat.numeroAssento)}
+                          title={`Assento ${seat.numeroAssento}`}
+                          className={`
+                            w-6 h-6 sm:w-8 sm:h-8 rounded-t-lg rounded-b-sm text-[8px] sm:text-[9px] font-bold
+                            transition-all duration-150 flex items-center justify-center border-b-2
+                            ${isUnavailable
+                              ? 'bg-[#e50914]/70 border-[#a00] cursor-not-allowed'
+                              : isSelected
+                                ? 'bg-[#4CAF50] border-[#2e7d32] scale-110 text-white shadow-[0_0_8px_rgba(76,175,80,0.7)]'
+                                : 'bg-[#555] border-[#333] text-gray-300 hover:bg-[#6a6a6a] hover:scale-110 active:scale-95'
+                            }
+                          `}
+                        >
+                          {seat.col}
+                        </button>
+                      );
                     }
-                })}
-                 {/* Indicador de Linha Direita */}
-                 <span className="text-gray-500 text-[10px] font-bold self-center justify-self-start">{rowLetter}</span>
-              </div>
-            ))}
+                    return <div key={`${rowLetter}-${colNum}-empty`} className="w-6 h-6 sm:w-8 sm:h-8 opacity-0 pointer-events-none" />;
+                  })}
+
+                  {/* Label direita */}
+                  <span className="text-gray-600 text-[9px] font-bold self-center pl-0.5">{rowLetter}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="flex justify-center gap-6 mb-12 text-sm">
-        <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#444] rounded"></div>
-            <span className="text-gray-400">Disponível</span>
+      <div className="flex justify-center gap-4 sm:gap-6 mb-10 text-xs sm:text-sm flex-wrap">
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-4 bg-[#555] rounded-t-md rounded-b-sm border-b-2 border-[#333]" />
+          <span className="text-gray-400">Disponível</span>
         </div>
-        <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#4CAF50] rounded"></div>
-            <span className="text-gray-400">Selecionado</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-4 bg-[#4CAF50] rounded-t-md rounded-b-sm border-b-2 border-[#2e7d32]" />
+          <span className="text-gray-400">Selecionado</span>
         </div>
-        <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#e50914] opacity-70 rounded"></div>
-            <span className="text-gray-400">Ocupado/Reservado</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-4 bg-[#e50914]/70 rounded-t-md rounded-b-sm border-b-2 border-[#a00]" />
+          <span className="text-gray-400">Ocupado</span>
         </div>
       </div>
 
@@ -240,8 +251,9 @@ const Sessao = () => {
             <input
               type="text"
               value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
+              onChange={(e) => setCpf(formatCPF(e.target.value))}
               placeholder="000.000.000-00"
+              maxLength={14}
               required
               className="w-full bg-black/40 border border-white/20 focus:border-cinema-neon rounded-lg px-4 py-2 text-white focus:outline-none transition-colors"
             />
